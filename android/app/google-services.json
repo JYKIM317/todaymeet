@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "1038358532871",
+    "project_id": "famat-c5559",
+    "storage_bucket": "famat-c5559.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038358532871:android:7cb43728c04839c3162ba2",
+        "android_client_info": {
+          "package_name": "com.example.famet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038358532871-rhadvnvp42b304fq7hkkfa5jm593h77j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.famet",
+            "certificate_hash": "6b716cc12f1034493e6138344b4782f9670009e7"
+          }
+        },
+        {
+          "client_id": "1038358532871-g3ioqao5ndv7idaopvmmjat5p9f24j69.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsSSYPK-JDNVA04nKQC9yrcGsNzLkOfNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038358532871-g3ioqao5ndv7idaopvmmjat5p9f24j69.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1038358532871-acn49tvkhb5273cctss6g83h7nvbtjie.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.famet"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
