@@ -38,7 +38,8 @@ late AndroidNotificationChannel channel;
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 const fetchBackground = 'fetchBackground';
-const fcmServerKey = 'AAAA8cL90wc:APA91bF-RBJ3dRn0d_1uSIoJE1BNIzaA8weml0I-3xVH44Zshxqgo7342rmr5TT1JDE-aNNej6DekBinmbSTQ2llvBCBxE4EqHTSQ1x-UwxphCorQWAUcrb_c3jaNiQfEu04IhgETBQf';
+const fcmServerKey =
+    'AAAA8cL90wc:APA91bF-RBJ3dRn0d_1uSIoJE1BNIzaA8weml0I-3xVH44Zshxqgo7342rmr5TT1JDE-aNNej6DekBinmbSTQ2llvBCBxE4EqHTSQ1x-UwxphCorQWAUcrb_c3jaNiQfEu04IhgETBQf';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -53,8 +54,7 @@ Future<void> sendMessage({
 }) async {
   http.Response response;
   try {
-    response = await http.post(
-        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+    response = await http.post(Uri.parse('https://fcm.googleapis.com/fcm/send'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'key=$fcmServerKey', //http v1으로 마이그레이션 해야함
@@ -73,8 +73,7 @@ Future<void> sendMessage({
           'to': userToken, // 'registration_ids': tokenList
           'content_available': true,
           'priority': 'high',
-        })
-    );
+        }));
   } catch (e) {
     print('error $e');
   }
@@ -82,60 +81,83 @@ Future<void> sendMessage({
 
 void callbackDispatcher() {
   WidgetsFlutterBinding.ensureInitialized();
-  Workmanager().executeTask((task, inputData) async{
+  Workmanager().executeTask((task, inputData) async {
     await Firebase.initializeApp();
     switch (task) {
-      case fetchBackground :
+      case fetchBackground:
         User? currentUser = FirebaseAuth.instance.currentUser;
-        if(currentUser != null) {
+        if (currentUser != null) {
           var userFcmToken;
           final joinCheck = await FirebaseFirestore.instance
-              .collection('users').doc(currentUser.uid)
-              .collection('room').doc('join').get();
-          Map<String, dynamic>? joindata = joinCheck.data() as Map<String, dynamic>?;
+              .collection('users')
+              .doc(currentUser.uid)
+              .collection('room')
+              .doc('join')
+              .get();
+          Map<String, dynamic>? joindata =
+              joinCheck.data() as Map<String, dynamic>?;
           final madeCheck = await FirebaseFirestore.instance
-              .collection('users').doc(currentUser.uid)
-              .collection('room').doc('made').get();
-          Map<String, dynamic>? madedata = madeCheck.data() as Map<String, dynamic>?;
+              .collection('users')
+              .doc(currentUser.uid)
+              .collection('room')
+              .doc('made')
+              .get();
+          Map<String, dynamic>? madedata =
+              madeCheck.data() as Map<String, dynamic>?;
 
-          if(joindata != null || madedata != null){
-            final currentUserData = await FirebaseFirestore.instance.collection('users').doc(currentUser.uid).get();
-            Map<String, dynamic>? userToken = currentUserData.data() as Map<String, dynamic>?;
+          if (joindata != null || madedata != null) {
+            final currentUserData = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(currentUser.uid)
+                .get();
+            Map<String, dynamic>? userToken =
+                currentUserData.data() as Map<String, dynamic>?;
             userFcmToken = userToken!['pushToken'];
-            if(userFcmToken == null){
+            if (userFcmToken == null) {
               userFcmToken = await FirebaseMessaging.instance.getToken();
             }
           }
 
-          if(joindata != null) {
+          if (joindata != null) {
             final joinRoom = await FirebaseFirestore.instance
-                .collection('activateRoom').doc(joindata['hostUID']).get();
-            Map<String, dynamic>? joinRoomdata = joinRoom.data() as Map<String, dynamic>?;
-            if(joinRoomdata == null){
+                .collection('activateRoom')
+                .doc(joindata['hostUID'])
+                .get();
+            Map<String, dynamic>? joinRoomdata =
+                joinRoom.data() as Map<String, dynamic>?;
+            if (joinRoomdata == null) {
               final joinRoomI = await FirebaseFirestore.instance
-                  .collection('inProgressRoom').doc(joindata['hostUID']).get();
+                  .collection('inProgressRoom')
+                  .doc(joindata['hostUID'])
+                  .get();
               joinRoomdata = joinRoomI.data() as Map<String, dynamic>?;
             }
-            if(joinRoomdata != null){
+            if (joinRoomdata != null) {
               final targetTime = DateTime(
-                joinRoomdata['targetYear'], joinRoomdata['targetMonth'], joinRoomdata['targetDay'],
-                joinRoomdata['targetHour'], joinRoomdata['targetMinute'],
+                joinRoomdata['targetYear'],
+                joinRoomdata['targetMonth'],
+                joinRoomdata['targetDay'],
+                joinRoomdata['targetHour'],
+                joinRoomdata['targetMinute'],
               );
-              if(targetTime.difference(DateTime.now()).inMinutes >= 40 && targetTime.difference(DateTime.now()).inMinutes <= 55){
+              if (targetTime.difference(DateTime.now()).inMinutes >= 40 &&
+                  targetTime.difference(DateTime.now()).inMinutes <= 55) {
                 await sendMessage(
-                    userToken: userFcmToken,
-                    title: '오늘모임',
-                    body: '모임 시작 30분 전부터는 모임 탈퇴가 불가능합니다 \n지금 참가한 모임을 확인해보세요!',
+                  userToken: userFcmToken,
+                  title: '오늘모임',
+                  body: '모임 시작 30분 전부터는 모임 탈퇴가 불가능합니다 \n지금 참가한 모임을 확인해보세요!',
                 );
               }
-              if(targetTime.difference(DateTime.now()).inMinutes >= 15 && targetTime.difference(DateTime.now()).inMinutes <= 30){
+              if (targetTime.difference(DateTime.now()).inMinutes >= 15 &&
+                  targetTime.difference(DateTime.now()).inMinutes <= 30) {
                 await sendMessage(
                   userToken: userFcmToken,
                   title: '오늘모임',
                   body: '곧 모임이 시작됩니다! \n지금은 모임을 탈퇴할 수 없어요',
                 );
               }
-              if(DateTime.now().difference(targetTime).inMinutes >= 0 && DateTime.now().difference(targetTime).inMinutes <= 15){
+              if (DateTime.now().difference(targetTime).inMinutes >= 0 &&
+                  DateTime.now().difference(targetTime).inMinutes <= 15) {
                 await sendMessage(
                   userToken: userFcmToken,
                   title: '오늘모임',
@@ -145,26 +167,33 @@ void callbackDispatcher() {
             }
           }
 
-          if(madedata != null) {
+          if (madedata != null) {
             final targetTime = DateTime(
-              madedata['targetYear'], madedata['targetMonth'], madedata['targetDay'],
-              madedata['targetHour'], madedata['targetMinute'],
+              madedata['targetYear'],
+              madedata['targetMonth'],
+              madedata['targetDay'],
+              madedata['targetHour'],
+              madedata['targetMinute'],
             );
-            if(targetTime.difference(DateTime.now()).inMinutes >= 40 && targetTime.difference(DateTime.now()).inMinutes <= 55){
+            if (targetTime.difference(DateTime.now()).inMinutes >= 40 &&
+                targetTime.difference(DateTime.now()).inMinutes <= 55) {
               await sendMessage(
-                  userToken: userFcmToken,
-                  title: '오늘모임',
-                  body: '모임 시작 30분 전부터는 모임 탈퇴가 불가능합니다 \n지금 참가한 모임을 확인해보세요!',
+                userToken: userFcmToken,
+                title: '오늘모임',
+                body: '모임 시작 30분 전부터는 모임 탈퇴가 불가능합니다 \n지금 참가한 모임을 확인해보세요!',
               );
             }
-            if(targetTime.difference(DateTime.now()).inMinutes >= 15 && targetTime.difference(DateTime.now()).inMinutes <= 30){
+            if (targetTime.difference(DateTime.now()).inMinutes >= 15 &&
+                targetTime.difference(DateTime.now()).inMinutes <= 30) {
               await sendMessage(
                 userToken: userFcmToken,
                 title: '오늘모임',
                 body: '곧 모임이 시작됩니다! \n지금은 모임을 탈퇴할 수 없어요',
               );
             }
-            if(DateTime.now().difference(targetTime).inMinutes >= 10 && DateTime.now().difference(targetTime).inMinutes <= 25 && madedata['inProgress'] == true){
+            if (DateTime.now().difference(targetTime).inMinutes >= 10 &&
+                DateTime.now().difference(targetTime).inMinutes <= 25 &&
+                madedata['inProgress'] == true) {
               await sendMessage(
                 userToken: userFcmToken,
                 title: '오늘모임',
@@ -179,7 +208,7 @@ void callbackDispatcher() {
   });
 }
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await MobileAds.instance.initialize();
@@ -189,19 +218,17 @@ void main() async{
   await ScreenUtil.ensureScreenSize();
 
   await Workmanager().initialize(callbackDispatcher);
-  await Workmanager().registerPeriodicTask(
-    'checkGroup',
-    fetchBackground,
-    frequency: Duration(minutes: 15),
-    constraints: Constraints(networkType: NetworkType.connected)
-  );
+  await Workmanager().registerPeriodicTask('checkGroup', fetchBackground,
+      frequency: Duration(minutes: 15),
+      constraints: Constraints(networkType: NetworkType.connected));
 
-  var initialzationSettingsIOS =  DarwinInitializationSettings(
+  var initialzationSettingsIOS = DarwinInitializationSettings(
     requestSoundPermission: true,
     requestBadgePermission: true,
     requestAlertPermission: true,
   );
-  var initialzationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+  var initialzationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   NotificationSettings settings = await messaging.requestPermission(
@@ -219,7 +246,7 @@ void main() async{
     'high_importance_channel', // id
     'High Importance Notifications', // title
     description:
-    'This channel is used for important notifications.', // description
+        'This channel is used for important notifications.', // description
     importance: Importance.high,
   );
 
@@ -231,7 +258,8 @@ void main() async{
 
   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
   var initializationSettings = InitializationSettings(
     android: initialzationSettingsAndroid,
@@ -239,44 +267,40 @@ void main() async{
   );
   await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-  if(FirebaseAuth.instance.currentUser?.uid != null){
+  if (FirebaseAuth.instance.currentUser?.uid != null) {
     var pushtoken = await FirebaseMessaging.instance.getToken();
-    _userinfo.update({'pushToken':pushtoken});
+    _userinfo.update({'pushToken': pushtoken});
   }
-  runApp(
-      ProviderScope(
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: LoginPage(),
-            theme: ThemeData(
-              fontFamily: 'Pretendard',
-              splashColor: Colors.transparent,
-              hoverColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              textButtonTheme: TextButtonThemeData(
-                  style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all<Color>(Color(0xFF51CF6D)),
-                      overlayColor: MaterialStateProperty.all<Color>(Colors.transparent)
-                  )
-              ),
-              inputDecorationTheme: InputDecorationTheme(
-                labelStyle: TextStyle(color: Color(0xFF51CF6D)),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(
-                      color: Color(0xFF51CF6D)
-                  ),
-                ),
-              ),
-              elevatedButtonTheme: ElevatedButtonThemeData(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF51CF6D)))
-              ),
-            ),
-            localizationsDelegates: [
-              FlutterFireUILocalizations.withDefaultOverrides(const LabelOverrides())
-            ],
-          )
-      )
-  );
+  runApp(ProviderScope(
+      child: MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: LoginPage(),
+    theme: ThemeData(
+      fontFamily: 'Pretendard',
+      splashColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+              foregroundColor:
+                  MaterialStateProperty.all<Color>(Color(0xFF51CF6D)),
+              overlayColor:
+                  MaterialStateProperty.all<Color>(Colors.transparent))),
+      inputDecorationTheme: InputDecorationTheme(
+        labelStyle: TextStyle(color: Color(0xFF51CF6D)),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Color(0xFF51CF6D)),
+        ),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(Color(0xFF51CF6D)))),
+    ),
+    localizationsDelegates: [
+      FlutterFireUILocalizations.withDefaultOverrides(const LabelOverrides())
+    ],
+  )));
 }
 
 class MyApp extends StatefulWidget {
@@ -293,26 +317,22 @@ class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
 
   InterstitialAd? _interstitialAd;
-  void interstitialAd(){
+  void interstitialAd() {
     InterstitialAd.load(
-      //id 테스트ID -> 실제 Ad ID로 변경해야함
+        //id 테스트ID -> 실제 Ad ID로 변경해야함
         adUnitId: Platform.isAndroid
             ? 'ca-app-pub-3940256099942544/1033173712'
             : 'ca-app-pub-3940256099942544/4411468910',
         request: AdRequest(),
-        adLoadCallback: InterstitialAdLoadCallback(
-            onAdLoaded: (ad){
-              debugPrint('$ad loaded');
-              _interstitialAd = ad;
-            },
-            onAdFailedToLoad: (LoadAdError error){
-              debugPrint('$error');
-            }
-        )
-    );
+        adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
+          debugPrint('$ad loaded');
+          _interstitialAd = ad;
+        }, onAdFailedToLoad: (LoadAdError error) {
+          debugPrint('$error');
+        }));
   }
 
-  void _onBottomTapped(int index){
+  void _onBottomTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -341,7 +361,7 @@ class _MyAppState extends State<MyApp> {
         iOS: iOSNotiDetails,
       );
       if (notification != null) {
-        if(message.data['status'] == 'app'){
+        if (message.data['status'] == 'app') {
           flutterLocalNotificationsPlugin.show(
             notification.hashCode,
             notification.title,
@@ -355,7 +375,7 @@ class _MyAppState extends State<MyApp> {
       print(message);
     });
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
-      _userinfo.update({'pushToken':fcmToken});
+      _userinfo.update({'pushToken': fcmToken});
     });
   }
 
@@ -368,9 +388,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async{
+      onWillPop: () async {
         const value = true;
-        if(_interstitialAd != null) _interstitialAd?.show();
+        if (_interstitialAd != null) _interstitialAd?.show();
         return value;
       },
       child: Scaffold(
@@ -380,231 +400,289 @@ class _MyAppState extends State<MyApp> {
             elevation: 0,
             title: Padding(
               padding: EdgeInsets.only(left: 12.w),
-              child: Text(['오늘모임.', '모임찾기', '채팅방', '모임관리', '프로필'][_selectedIndex],
+              child: Text(
+                  ['오늘모임.', '모임찾기', '채팅방', '모임관리', '프로필'][_selectedIndex],
                   style: TextStyle(
-                    color: _selectedIndex == 0 ? Color(0xFF51CF6D):Colors.black,
+                    color:
+                        _selectedIndex == 0 ? Color(0xFF51CF6D) : Colors.black,
                     fontWeight: FontWeight.w700,
                     fontFamily: _selectedIndex == 0 ? 'room703' : 'Pretendard',
                     fontSize: _selectedIndex == 0 ? 22.w : 18.w,
-                  )
-              ),
+                  )),
             ),
             actions: [
               StreamBuilder(
-                stream: _userinfo.collection('notification').snapshots(),
-                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-                  if(snapshot.hasError) return Text('');
-                  if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                  List<DocumentSnapshot> notificationList = snapshot.data!.docs;
-                  if(notificationList.isEmpty){
-                    _userinfo.collection('notification').doc('1nfo').set({
-                      'recent':DateTime.now()
-                    });
-                  }
-                  DateTime recentRead = notificationList.first.get('recent').toDate();
-                  DateTime lastNotification = notificationList.last.get('timeStamp').toDate();
-                  return Padding(
-                    padding: EdgeInsets.only(right: 16.w),
-                    child: Stack(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.notifications_none,
-                            color: Color(0xFF51CF6D),
-                            size: 22.w,
+                  stream: _userinfo.collection('notification').snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) return Text('');
+                    if (snapshot.connectionState == ConnectionState.waiting)
+                      return Text('');
+                    List<DocumentSnapshot> notificationList =
+                        snapshot.data!.docs;
+                    if (notificationList.isEmpty) {
+                      _userinfo
+                          .collection('notification')
+                          .doc('1nfo')
+                          .set({'recent': DateTime.now()});
+                    }
+                    DateTime recentRead =
+                        notificationList.first.get('recent').toDate();
+                    DateTime lastNotification =
+                        notificationList.last.get('timeStamp').toDate();
+                    return Padding(
+                      padding: EdgeInsets.only(right: 16.w),
+                      child: Stack(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.notifications_none,
+                              color: Color(0xFF51CF6D),
+                              size: 22.w,
+                            ),
+                            onPressed: () async {
+                              Scaffold.of(context).openEndDrawer();
+                              await _userinfo
+                                  .collection('notification')
+                                  .doc('1nfo')
+                                  .update({
+                                'recent': DateTime.now(),
+                              });
+                            },
+                            hoverColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            highlightColor: Colors.transparent,
                           ),
-                          onPressed: () async{
-                            Scaffold.of(context).openEndDrawer();
-                            await _userinfo.collection('notification').doc('1nfo').update({
-                              'recent':DateTime.now(),
-                            });
-                          },
-                          hoverColor: Colors.transparent,
-                          splashColor: Colors.transparent,
-                          highlightColor: Colors.transparent,
-                        ),
-                        if(recentRead.isBefore(lastNotification))
-                        Transform.translate(
-                          offset: Offset(22.w, 20.w),
-                            child: CircleAvatar(backgroundColor: Color(0xFFFFA000), radius: 4.w,)
-                        )
-                      ],
-                    ),
-                  );
-                }
-              )
+                          if (recentRead.isBefore(lastNotification))
+                            Transform.translate(
+                                offset: Offset(22.w, 20.w),
+                                child: CircleAvatar(
+                                  backgroundColor: Color(0xFFFFA000),
+                                  radius: 4.w,
+                                ))
+                        ],
+                      ),
+                    );
+                  })
             ],
           ),
           endDrawer: Drawer(
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 100.w,
-                    child: DrawerHeader(
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                        ),
-                        child: Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text('알림',
-                                style: TextStyle(fontSize: 24.w)
-                            )
-                        )
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 100.w,
+                child: DrawerHeader(
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
                     ),
-                  ),
-                  Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(6.w, 0, 6.w, 6.w),
-                        child: StreamBuilder<QuerySnapshot>(
-                          stream: _userinfo.collection('notification').snapshots(),
-                          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-                            if(snapshot.hasError) return Text('오류가 발생했습니다.');
-                            if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                            final List<DocumentSnapshot> notificationList = snapshot.data!.docs.reversed.toList();
-                            notificationList.removeAt(notificationList.length-1);
-                            return notificationList.isNotEmpty ?
-                                ListView.separated(
-                                  physics: BouncingScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: notificationList.length,
-                                  itemBuilder: (BuildContext ctx, int idx){
-                                    return FutureBuilder(
-                                      future: _userinfo.collection('notification').doc('${notificationList[idx].id}').get(),
-                                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                                        if(snapshot.hasError) return Text('오류가 발생했습니다.');
-                                        if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                                        Map<String, dynamic>? data = snapshot.data?.data() as Map<String, dynamic>?;
-                                        DateTime notificatedTime = data!['timeStamp'].toDate();
-                                        String sendTime = '${notificatedTime.month}월${notificatedTime.day}일 ${notificatedTime.hour}:${notificatedTime.minute.toString().length == 1 ? '0${notificatedTime.minute}' : notificatedTime.minute}';
-                                        return InkWell(
-                                          child: Container(
-                                            height: 70.w, width: double.infinity,
-                                            padding: EdgeInsets.only(left: 4.w),
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    bottom: BorderSide(
-                                                      width: 1,
-                                                      color: Colors.grey.withOpacity(0.7),
-                                                    )
-                                                )
-                                            ),
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text('${data['title']}',
+                    child: Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text('알림', style: TextStyle(fontSize: 24.w)))),
+              ),
+              Expanded(
+                  child: Padding(
+                padding: EdgeInsets.fromLTRB(6.w, 0, 6.w, 6.w),
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _userinfo.collection('notification').snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) return Text('오류가 발생했습니다.');
+                    if (snapshot.connectionState == ConnectionState.waiting)
+                      return Text('');
+                    final List<DocumentSnapshot> notificationList =
+                        snapshot.data!.docs.reversed.toList();
+                    notificationList.removeAt(notificationList.length - 1);
+                    return notificationList.isNotEmpty
+                        ? ListView.separated(
+                            physics: BouncingScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: notificationList.length,
+                            itemBuilder: (BuildContext ctx, int idx) {
+                              return FutureBuilder(
+                                future: _userinfo
+                                    .collection('notification')
+                                    .doc('${notificationList[idx].id}')
+                                    .get(),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                  if (snapshot.hasError)
+                                    return Text('오류가 발생했습니다.');
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) return Text('');
+                                  Map<String, dynamic>? data = snapshot.data
+                                      ?.data() as Map<String, dynamic>?;
+                                  DateTime notificatedTime =
+                                      data!['timeStamp'].toDate();
+                                  String sendTime =
+                                      '${notificatedTime.month}월${notificatedTime.day}일 ${notificatedTime.hour}:${notificatedTime.minute.toString().length == 1 ? '0${notificatedTime.minute}' : notificatedTime.minute}';
+                                  return InkWell(
+                                    child: Container(
+                                      height: 70.w,
+                                      width: double.infinity,
+                                      padding: EdgeInsets.only(left: 4.w),
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                        width: 1,
+                                        color: Colors.grey.withOpacity(0.7),
+                                      ))),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('${data['title']}',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: 14.w,
+                                              )),
+                                          if (data['state'] == 'request')
+                                            Text('모임에 새로운 가입요청이 있습니다',
+                                                style:
+                                                    TextStyle(fontSize: 12.w)),
+                                          if (data['state'] == 'exit')
+                                            Text('모임에서 일부 참가자가 탈퇴했습니다',
+                                                style:
+                                                    TextStyle(fontSize: 12.w)),
+                                          if (data['state'] == 'accept')
+                                            Text('모임에 가입요청이 수락되었습니다',
+                                                style:
+                                                    TextStyle(fontSize: 12.w)),
+                                          if (data['state'] == 'denied')
+                                            Text('모임에 가입요청이 거절되었습니다',
+                                                style:
+                                                    TextStyle(fontSize: 12.w)),
+                                          if (data['state'] == 'kick')
+                                            Text('모임에서 내보내기 되었습니다',
+                                                style:
+                                                    TextStyle(fontSize: 12.w)),
+                                          if (data['state'] == 'dismiss')
+                                            Text('모임이 해체되었습니다',
+                                                style:
+                                                    TextStyle(fontSize: 12.w)),
+                                          if (data['state'] == 'notEnough')
+                                            Text('모임이 인원 미충족으로 해체되었습니다',
+                                                style:
+                                                    TextStyle(fontSize: 12.w)),
+                                          if (data['state'] == 'start')
+                                            Text('모임이 시작되었습니다.',
+                                                style:
+                                                    TextStyle(fontSize: 12.w)),
+                                          SizedBox(height: 4.w),
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.end,
+                                            children: [
+                                              if (data['state'] != 'denied' &&
+                                                  data['state'] != 'kick' &&
+                                                  data['state'] != 'dismiss' &&
+                                                  data['state'] != 'notEnough')
+                                                Text('눌러서 자세히보기',
                                                     style: TextStyle(
-                                                        fontWeight: FontWeight.w700,
-                                                        fontSize: 14.w,
-                                                    )
-                                                ),
-                                                if(data['state'] == 'request')
-                                                  Text('모임에 새로운 가입요청이 있습니다',style: TextStyle(fontSize: 12.w)),
-                                                if(data['state'] == 'exit')
-                                                  Text('모임에서 일부 참가자가 탈퇴했습니다',style: TextStyle(fontSize: 12.w)),
-                                                if(data['state'] == 'accept')
-                                                  Text('모임에 가입요청이 수락되었습니다',style: TextStyle(fontSize: 12.w)),
-                                                if(data['state'] == 'denied')
-                                                  Text('모임에 가입요청이 거절되었습니다',style: TextStyle(fontSize: 12.w)),
-                                                if(data['state'] == 'kick')
-                                                  Text('모임에서 내보내기 되었습니다',style: TextStyle(fontSize: 12.w)),
-                                                if(data['state'] == 'dismiss')
-                                                  Text('모임이 해체되었습니다',style: TextStyle(fontSize: 12.w)),
-                                                if(data['state'] == 'notEnough')
-                                                  Text('모임이 인원 미충족으로 해체되었습니다',style: TextStyle(fontSize: 12.w)),
-                                                if(data['state'] == 'start')
-                                                  Text('모임이 시작되었습니다.',style: TextStyle(fontSize: 12.w)),
-                                                SizedBox(height: 4.w),
-                                                Row(
-                                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                                  children: [
-                                                    if(data['state'] != 'denied' && data['state'] != 'kick' && data['state'] != 'dismiss' && data['state'] != 'notEnough')
-                                                    Text('눌러서 자세히보기',style: TextStyle(fontSize: 12.w, color: Colors.grey)),
-                                                    if(data['state'] != 'denied' && data['state'] != 'kick' && data['state'] != 'dismiss' && data['state'] != 'notEnough')
-                                                    SizedBox(width: 4.w),
-                                                    Text('$sendTime',style: TextStyle(fontSize: 10.w, color: Colors.grey)),
-                                                  ],
-                                                ),
-                                              ],
-                                            ),
+                                                        fontSize: 12.w,
+                                                        color: Colors.grey)),
+                                              if (data['state'] != 'denied' &&
+                                                  data['state'] != 'kick' &&
+                                                  data['state'] != 'dismiss' &&
+                                                  data['state'] != 'notEnough')
+                                                SizedBox(width: 4.w),
+                                              Text('$sendTime',
+                                                  style: TextStyle(
+                                                      fontSize: 10.w,
+                                                      color: Colors.grey)),
+                                            ],
                                           ),
-                                          onTap: (){
-                                            if(data['state'] == 'request' || data['state'] == 'exit' ){
-                                              Navigator.push(context,
-                                                  MaterialPageRoute(builder: (context) => HostRoomPage()) //모임 자세히보기
-                                              );
-                                            }
-                                            if(data['state'] == 'accept' || data['state'] == 'start'){
-                                              Scaffold.of(context).closeEndDrawer();
-                                              setState(() {
-                                                _selectedIndex = 3;
-                                              });
-                                            }
-                                          },
-                                        );
-                                      },
-                                    );
-                                  },
-                                  separatorBuilder: (ctx, idx){
-                                    return SizedBox(height: 8.w);
-                                  },
-                                ) : SizedBox(height: 0);
-                          },
-                        ),
-                      )
-                  ),
-                ],
-              )
-          ),
-          body: [HomePage(),GroupSearch(),ChatRoomView(),GroupManagePage(),ProfilePage()][_selectedIndex],
+                                        ],
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      if (data['state'] == 'request' ||
+                                          data['state'] == 'exit') {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    HostRoomPage()) //모임 자세히보기
+                                            );
+                                      }
+                                      if (data['state'] == 'accept' ||
+                                          data['state'] == 'start') {
+                                        Scaffold.of(context).closeEndDrawer();
+                                        setState(() {
+                                          _selectedIndex = 3;
+                                        });
+                                      }
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                            separatorBuilder: (ctx, idx) {
+                              return SizedBox(height: 8.w);
+                            },
+                          )
+                        : SizedBox(height: 0);
+                  },
+                ),
+              )),
+            ],
+          )),
+          body: [
+            HomePage(),
+            GroupSearch(),
+            ChatRoomView(),
+            GroupManagePage(),
+            ProfilePage()
+          ][_selectedIndex],
           bottomNavigationBar: SizedBox(
             height: 48.w,
             child: Theme(
               data: ThemeData(
                   splashColor: Colors.transparent,
                   highlightColor: Colors.transparent,
-                  hoverColor: Colors.transparent
-              ),
+                  hoverColor: Colors.transparent),
               child: BottomNavigationBar(
                 items: [
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.home_filled),
-                      label: '홈'
-                  ),
+                      icon: Icon(Icons.home_filled), label: '홈'),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.person_search),
-                      label: '모임찾기'
-                  ),
+                      icon: Icon(Icons.person_search), label: '모임찾기'),
                   BottomNavigationBarItem(
-                      icon:
-                          Stack(
-                            children: [
-                              Icon(Icons.forum_outlined),
-                              StreamBuilder(
-                                stream: _userinfo.collection('chat').where('read', isEqualTo: 1).snapshots(),
-                                builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-                                  if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                                  if(snapshot.hasError) return Text('');
-                                  final List<DocumentSnapshot> newChat = snapshot.data!.docs;
-                                  return newChat.isNotEmpty ?
-                                  Transform.translate(
+                      icon: Stack(
+                        children: [
+                          Icon(Icons.forum_outlined),
+                          StreamBuilder(
+                            stream: _userinfo
+                                .collection('chat')
+                                .where('read', isEqualTo: 1)
+                                .snapshots(),
+                            builder: (BuildContext context,
+                                AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) return Text('');
+                              if (snapshot.hasError) return Text('');
+                              final List<DocumentSnapshot> newChat =
+                                  snapshot.data!.docs;
+                              return newChat.isNotEmpty
+                                  ? Transform.translate(
                                       offset: Offset(15.w, 3.w),
-                                      child: CircleAvatar(backgroundColor: Color(0xFFFFA000), radius: 4.w,)
-                                  ): SizedBox(height: 0);
-                                },
-                              )
-                            ],
-                          ),
-                      label: '채팅방'
-                  ),
+                                      child: CircleAvatar(
+                                        backgroundColor: Color(0xFFFFA000),
+                                        radius: 4.w,
+                                      ))
+                                  : SizedBox(height: 0);
+                            },
+                          )
+                        ],
+                      ),
+                      label: '채팅방'),
                   BottomNavigationBarItem(
                       icon: Icon(Icons.auto_awesome_motion_outlined),
-                      label: '모임관리'
-                  ),
+                      label: '모임관리'),
                   BottomNavigationBarItem(
-                      icon: Icon(Icons.person_outline),
-                      label: '프로필'
-                  ),
+                      icon: Icon(Icons.person_outline), label: '프로필'),
                 ],
                 currentIndex: _selectedIndex,
                 onTap: _onBottomTapped,
@@ -615,13 +693,10 @@ class _MyAppState extends State<MyApp> {
                 selectedFontSize: 10.w,
                 iconSize: 22.w,
                 showUnselectedLabels: false,
-                selectedLabelStyle: TextStyle(
-                    fontFamily: 'Pretendard'
-                ),
+                selectedLabelStyle: TextStyle(fontFamily: 'Pretendard'),
               ),
             ),
-          )
-      ),
+          )),
     );
   }
 }
@@ -633,19 +708,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   Widget bannerAd() {
-    BannerAdListener bannerAdListener = BannerAdListener(onAdWillDismissScreen: (ad){
+    BannerAdListener bannerAdListener =
+        BannerAdListener(onAdWillDismissScreen: (ad) {
       ad.dispose();
     });
 
     BannerAd _bannerAd = BannerAd(
-        size: AdSize.banner,
-        adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/6300978111'
-            : 'ca-app-pub-3940256099942544/2934735716',
-        listener: bannerAdListener,
-        request: AdRequest(),
+      size: AdSize.banner,
+      adUnitId: Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-3940256099942544/2934735716',
+      listener: bannerAdListener,
+      request: AdRequest(),
     );
 
     _bannerAd.load();
@@ -670,11 +745,11 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  marketingAgree(){
+  marketingAgree() {
     return showDialog(
         barrierDismissible: false,
         context: context,
-        builder: (BuildContext context){
+        builder: (BuildContext context) {
           return WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog(
@@ -686,7 +761,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisSize: MainAxisSize.min,
-                  children:[
+                  children: [
                     Container(
                       alignment: Alignment.center,
                       child: Text(
@@ -701,7 +776,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     Container(
                       padding: EdgeInsets.fromLTRB(10.w, 20.h, 10.w, 20.h),
-                      child: Text("'오늘모임' 의 마케팅 활용 및 광고성 정보(유입목적의 푸시알림 및 이벤트에 대한 내용)에 대한 내용을 수신하는데 동의하십니까?\n\n본 내용에 대한 동의는 언제든 앱 내 설정에서 바꿀 수 있습니다.\n\n거부 시에는 앱에서 진행하는 이벤트 혹은 프로모션에 관한 내용을 전달받지 못할 수 있습니다."),
+                      child: Text(
+                          "'오늘모임' 의 마케팅 활용 및 광고성 정보(유입목적의 푸시알림 및 이벤트에 대한 내용)에 대한 내용을 수신하는데 동의하십니까?\n\n본 내용에 대한 동의는 언제든 앱 내 설정에서 바꿀 수 있습니다.\n\n거부 시에는 앱에서 진행하는 이벤트 혹은 프로모션에 관한 내용을 전달받지 못할 수 있습니다."),
                     ),
                     SizedBox(height: 5.h),
                     Row(
@@ -718,7 +794,8 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Text(
                                     "거부",
@@ -728,23 +805,25 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                             ),
-                            onTap: (){
+                            onTap: () {
                               final setTime = DateTime.now();
                               FirebaseFirestore.instance
-                                  .collection('users').doc(_user!.uid)
-                                  .collection('marketingInfo').doc('agreement').set({
-                                'setTime':setTime,
-                                'agreement':'disagree',
+                                  .collection('users')
+                                  .doc(_user!.uid)
+                                  .collection('marketingInfo')
+                                  .doc('agreement')
+                                  .set({
+                                'setTime': setTime,
+                                'agreement': 'disagree',
                               });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        "'오늘모임'의 광고성 정보 수신을 '비동의'하셨습니다.\n일시 : ${setTime.year}년 ${setTime.month}월${setTime.day}일"
-                                        , style: TextStyle(color: Colors.white)),
-                                    duration: Duration(seconds: 5),
-                                    backgroundColor: Colors.black,
-                                  )
-                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                    "'오늘모임'의 광고성 정보 수신을 '비동의'하셨습니다.\n일시 : ${setTime.year}년 ${setTime.month}월${setTime.day}일",
+                                    style: TextStyle(color: Colors.white)),
+                                duration: Duration(seconds: 5),
+                                backgroundColor: Colors.black,
+                              ));
                               Navigator.pop(context);
                             },
                           ),
@@ -759,7 +838,8 @@ class _HomePageState extends State<HomePage> {
                                     bottomRight: Radius.circular(12.w)),
                               ),
                               child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Text(
                                     "동의",
@@ -769,23 +849,25 @@ class _HomePageState extends State<HomePage> {
                                 ],
                               ),
                             ),
-                            onTap: (){
+                            onTap: () {
                               final setTime = DateTime.now();
                               FirebaseFirestore.instance
-                                  .collection('users').doc(_user!.uid)
-                                  .collection('marketingInfo').doc('agreement').set({
-                                'setTime':setTime,
-                                'agreement':'agree',
+                                  .collection('users')
+                                  .doc(_user!.uid)
+                                  .collection('marketingInfo')
+                                  .doc('agreement')
+                                  .set({
+                                'setTime': setTime,
+                                'agreement': 'agree',
                               });
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        "'오늘모임'의 광고성 정보 수신을 '동의'하셨습니다.\n일시 : ${setTime.year}년 ${setTime.month}월${setTime.day}일"
-                                        , style: TextStyle(color: Colors.white)),
-                                    duration: Duration(seconds: 5),
-                                    backgroundColor: Colors.black,
-                                  )
-                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                    "'오늘모임'의 광고성 정보 수신을 '동의'하셨습니다.\n일시 : ${setTime.year}년 ${setTime.month}월${setTime.day}일",
+                                    style: TextStyle(color: Colors.white)),
+                                duration: Duration(seconds: 5),
+                                backgroundColor: Colors.black,
+                              ));
                               Navigator.pop(context);
                             },
                           ),
@@ -797,18 +879,17 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           );
-        }
-    );
+        });
   }
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh:() async{
+      onRefresh: () async {
         setState(() {});
       },
       child: SingleChildScrollView(
-        physics: BouncingScrollPhysics(),
+          physics: BouncingScrollPhysics(),
           child: Padding(
             padding: EdgeInsets.fromLTRB(15.w, 15.w, 15.w, 10.w),
             child: Column(
@@ -820,69 +901,100 @@ class _HomePageState extends State<HomePage> {
                       style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.w700,
-                          fontSize: 16.w
-                      ),
+                          fontSize: 16.w),
                     ),
-                    height: 34.w, width: double.infinity,
+                    height: 34.w,
+                    width: double.infinity,
                     alignment: Alignment.centerLeft,
                     decoration: BoxDecoration(
-                        border:Border(
+                        border: Border(
                             bottom: BorderSide(
-                                color: Color(0xFF51CF6D),
-                                width: 1
-                            )
-                        )
-                    )
-                ),
+                                color: Color(0xFF51CF6D), width: 1)))),
                 SizedBox(height: 12.w),
                 FutureBuilder<DocumentSnapshot>(
                   future: _userinfo.collection('other').doc('block').get(),
-                  builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                    if(snapshot.hasError) return Text('오류가 발생했습니다.');
-                    if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                    Map<String, dynamic>? blocked = snapshot.data?.data() as Map<String, dynamic>?;
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasError) return Text('오류가 발생했습니다.');
+                    if (snapshot.connectionState == ConnectionState.waiting)
+                      return Text('');
+                    Map<String, dynamic>? blocked =
+                        snapshot.data?.data() as Map<String, dynamic>?;
                     List<dynamic> blocklist = blocked?['blocked'] ?? [];
-                    WidgetsBinding.instance.addPostFrameCallback((_) async{
+                    WidgetsBinding.instance.addPostFrameCallback((_) async {
                       bool firstLogin;
-                      final agreeData = await _userinfo.collection('marketingInfo').doc('agreement').get();
+                      final agreeData = await _userinfo
+                          .collection('marketingInfo')
+                          .doc('agreement')
+                          .get();
                       final agreementCheck = agreeData.get('agreement');
-                      if(agreementCheck == 'agree' || agreementCheck == 'disagree'){
+                      if (agreementCheck == 'agree' ||
+                          agreementCheck == 'disagree') {
                         firstLogin = false;
-                      }else{
+                      } else {
                         firstLogin = true;
                       }
-                      if(firstLogin){ marketingAgree(); }
+                      if (firstLogin) {
+                        marketingAgree();
+                      }
                     });
                     return FutureBuilder<QuerySnapshot>(
                       future: _roomlist.get(),
-                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-                        if(snapshot.hasError) return Text('오류가 발생했습니다.');
-                        if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                        if(!snapshot.hasData)return Text('만들어진 모임이 없습니다.');
-                        final List<DocumentSnapshot> activateRoom = snapshot.data!.docs;
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) return Text('오류가 발생했습니다.');
+                        if (snapshot.connectionState == ConnectionState.waiting)
+                          return Text('');
+                        if (!snapshot.hasData) return Text('만들어진 모임이 없습니다.');
+                        final List<DocumentSnapshot> activateRoom =
+                            snapshot.data!.docs;
                         activateRoom.shuffle();
                         return ListView.separated(
                           physics: BouncingScrollPhysics(),
                           shrinkWrap: true,
                           itemCount: activateRoom.length,
-                          itemBuilder: (BuildContext ctx, int idx){
+                          itemBuilder: (BuildContext ctx, int idx) {
                             return FutureBuilder<DocumentSnapshot>(
-                              future: _roomlist.doc('${activateRoom[idx].id}').get(),
-                              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                                if(snapshot.hasError) return Text('오류가 발생했습니다.');
-                                if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                                Map<String, dynamic>? data = snapshot.data?.data() as Map<String, dynamic>?;
-                                if(data == null) return SizedBox(height: 0);
+                              future: _roomlist
+                                  .doc('${activateRoom[idx].id}')
+                                  .get(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                if (snapshot.hasError)
+                                  return Text('오류가 발생했습니다.');
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) return Text('');
+                                Map<String, dynamic>? data = snapshot.data
+                                    ?.data() as Map<String, dynamic>?;
+                                if (data == null) return SizedBox(height: 0);
                                 String host = activateRoom[idx].id;
-                                List<dynamic> headcount = data['memberUID'] ?? [];
+                                List<dynamic> headcount =
+                                    data['memberUID'] ?? [];
                                 bool blockmember = false;
-                                String categoryTextH = data['Categories'].join('  ');
-                                final targetTime = DateTime(data['targetYear'] as int, data['targetMonth'] as int, data['targetDay'] as int, data['targetHour'] as int, data['targetMinute'] as int);
-                                if(targetTime.isBefore(DateTime.now()) && headcount.length == 1){
+                                String categoryTextH =
+                                    data['Categories'].join('  ');
+                                final targetTime = DateTime(
+                                    data['targetYear'] as int,
+                                    data['targetMonth'] as int,
+                                    data['targetDay'] as int,
+                                    data['targetHour'] as int,
+                                    data['targetMinute'] as int);
+                                if (targetTime.isBefore(DateTime.now()) &&
+                                    headcount.length == 1) {
                                   FirebaseFirestore.instance
-                                      .collection('users').doc('${activateRoom[idx].id}').collection('chat').doc('${data['chatRoom']}').delete();
-                                  FirebaseFirestore.instance.collection('chatRoom').doc('available').collection('${data['chatRoom']}').get().then((snapshot){
-                                    for (DocumentSnapshot doc in snapshot.docs){
+                                      .collection('users')
+                                      .doc('${activateRoom[idx].id}')
+                                      .collection('chat')
+                                      .doc('${data['chatRoom']}')
+                                      .delete();
+                                  FirebaseFirestore.instance
+                                      .collection('chatRoom')
+                                      .doc('available')
+                                      .collection('${data['chatRoom']}')
+                                      .get()
+                                      .then((snapshot) {
+                                    for (DocumentSnapshot doc
+                                        in snapshot.docs) {
                                       doc.reference.delete();
                                     }
                                   });
@@ -892,220 +1004,346 @@ class _HomePageState extends State<HomePage> {
                                     body: '개설하신 모임이 인원 미충족으로 해체되었습니다.',
                                   );
                                   FirebaseFirestore.instance
-                                      .collection('users').doc('${activateRoom[idx].id}')
-                                      .collection('notification').doc('${targetTime}_${data['hostUID']}').set({
+                                      .collection('users')
+                                      .doc('${activateRoom[idx].id}')
+                                      .collection('notification')
+                                      .doc('${targetTime}_${data['hostUID']}')
+                                      .set({
                                     'uid': data['hostUID'],
-                                    'title':data['title'],
-                                    'timeStamp':targetTime,
-                                    'state':'notEnough',
+                                    'title': data['title'],
+                                    'timeStamp': targetTime,
+                                    'state': 'notEnough',
                                   });
-                                  _roomlist.doc('${activateRoom[idx].id}').delete();
-                                  FirebaseFirestore.instance.collection('users').doc('${activateRoom[idx].id}').collection('room').doc('made').delete();
+                                  _roomlist
+                                      .doc('${activateRoom[idx].id}')
+                                      .delete();
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('${activateRoom[idx].id}')
+                                      .collection('room')
+                                      .doc('made')
+                                      .delete();
                                   return SizedBox(height: 0);
                                 }
-                                for(int b=0; b<headcount.length; b++){
-                                  if(blocklist.contains(headcount[b])) blockmember = true;
+                                for (int b = 0; b < headcount.length; b++) {
+                                  if (blocklist.contains(headcount[b]))
+                                    blockmember = true;
                                 }
-                                if(targetTime.isBefore(DateTime.now()) && headcount.length >= 2){
-                                  for(int h=0; h<headcount.length; h++){
+                                if (targetTime.isBefore(DateTime.now()) &&
+                                    headcount.length >= 2) {
+                                  for (int h = 0; h < headcount.length; h++) {
                                     FirebaseFirestore.instance
-                                        .collection('users').doc('${headcount[h]}')
-                                        .collection('notification').doc('${targetTime}_${data['hostUID']}').set({
+                                        .collection('users')
+                                        .doc('${headcount[h]}')
+                                        .collection('notification')
+                                        .doc('${targetTime}_${data['hostUID']}')
+                                        .set({
                                       'uid': data['hostUID'],
-                                      'title':data['title'],
-                                      'timeStamp':targetTime,
-                                      'state':'start',
+                                      'title': data['title'],
+                                      'timeStamp': targetTime,
+                                      'state': 'start',
                                     });
                                   }
                                   FirebaseFirestore.instance
-                                      .collection('inProgressRoom').doc('${activateRoom[idx].id}')
+                                      .collection('inProgressRoom')
+                                      .doc('${activateRoom[idx].id}')
                                       .set({
-                                    'Categories':data['Categories'],
-                                    'headcount':data['headcount'],
-                                    'hostPhotoUrl':data['hostPhotoUrl'],
-                                    'hostUID':data['hostUID'],
-                                    'info':data['info'],
-                                    'memberPhotoUrl':data['memberPhotoUrl'],
-                                    'memberUID':data['memberUID'],
-                                    'absent':data['memberUID'],
-                                    'place':data['place'],
-                                    'targetDay':data['targetDay'],
-                                    'targetHour':data['targetHour'],
-                                    'targetMinute':data['targetMinute'],
-                                    'targetMonth':data['targetMonth'],
-                                    'targetYear':data['targetYear'],
-                                    'title':data['title'],
-                                    'inProgress':true,
-                                    'memberTokenList':data['memberTokenList'],
+                                    'Categories': data['Categories'],
+                                    'headcount': data['headcount'],
+                                    'hostPhotoUrl': data['hostPhotoUrl'],
+                                    'hostUID': data['hostUID'],
+                                    'info': data['info'],
+                                    'memberPhotoUrl': data['memberPhotoUrl'],
+                                    'memberUID': data['memberUID'],
+                                    'absent': data['memberUID'],
+                                    'place': data['place'],
+                                    'targetDay': data['targetDay'],
+                                    'targetHour': data['targetHour'],
+                                    'targetMinute': data['targetMinute'],
+                                    'targetMonth': data['targetMonth'],
+                                    'targetYear': data['targetYear'],
+                                    'title': data['title'],
+                                    'inProgress': true,
+                                    'memberTokenList': data['memberTokenList'],
                                   });
                                   FirebaseFirestore.instance
-                                      .collection('users').doc('${activateRoom[idx].id}')
-                                      .collection('room').doc('made').update({
-                                    'inProgress':true,
-                                    'absent':data['memberUID'],
-                                      });
-                                  _roomlist.doc('${activateRoom[idx].id}').delete();
+                                      .collection('users')
+                                      .doc('${activateRoom[idx].id}')
+                                      .collection('room')
+                                      .doc('made')
+                                      .update({
+                                    'inProgress': true,
+                                    'absent': data['memberUID'],
+                                  });
+                                  _roomlist
+                                      .doc('${activateRoom[idx].id}')
+                                      .delete();
                                   return SizedBox(height: 0);
                                 }
-                                return headcount.isNotEmpty && blockmember != true ?
-                                Container(height: 94.w, width: double.infinity,
-                                  decoration: BoxDecoration(border: Border.all(color: Colors.grey, width: 1)),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(8.w),
-                                    child: Row(
-                                      children: [
-                                        InkWell(
+                                return headcount.isNotEmpty &&
+                                        blockmember != true
+                                    ? Container(
+                                        height: 94.w,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                color: Colors.grey, width: 1)),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.w),
                                           child: Row(
                                             children: [
-                                              SizedBox(
-                                                width: 70.w,
-                                                child: Stack(
+                                              InkWell(
+                                                child: Row(
                                                   children: [
-                                                    CircleAvatar(
-                                                      backgroundColor: Colors.grey,
-                                                      radius: 32.w,
-                                                      backgroundImage: NetworkImage('${data['hostPhotoUrl']}'),
-                                                    ),
-                                                    if(headcount.length >= 2)
-                                                    Transform.translate(
-                                                      offset: headcount.length == 2 ? Offset(35.w, 35.w) : Offset(25.w, 35.w),
-                                                      child: CircleAvatar(
-                                                        backgroundColor: Colors.grey,
-                                                        radius: 18.w,
-                                                        backgroundImage: NetworkImage('${data['memberPhotoUrl'][0]}'),
-                                                      ),
-                                                    ),
-                                                    if(headcount.length >= 3)
-                                                    Transform.translate(
-                                                      offset: Offset(35.w, 35.w),
-                                                      child: CircleAvatar(
-                                                        backgroundColor: Colors.white.withOpacity(0.8),
-                                                        radius: 18.w,
-                                                        child: Center(
-                                                          child: Text('+${headcount.length-2}',
-                                                            style: TextStyle(
-                                                              color: Colors.black,
-                                                              fontSize: 12.w,
-                                                              fontWeight: FontWeight.w700,
-                                                            ),
+                                                    SizedBox(
+                                                      width: 70.w,
+                                                      child: Stack(
+                                                        children: [
+                                                          CircleAvatar(
+                                                            backgroundColor:
+                                                                Colors.grey,
+                                                            radius: 32.w,
+                                                            backgroundImage:
+                                                                NetworkImage(
+                                                                    '${data['hostPhotoUrl']}'),
                                                           ),
-                                                        ),
+                                                          if (headcount
+                                                                  .length >=
+                                                              2)
+                                                            Transform.translate(
+                                                              offset: headcount
+                                                                          .length ==
+                                                                      2
+                                                                  ? Offset(35.w,
+                                                                      35.w)
+                                                                  : Offset(25.w,
+                                                                      35.w),
+                                                              child:
+                                                                  CircleAvatar(
+                                                                backgroundColor:
+                                                                    Colors.grey,
+                                                                radius: 18.w,
+                                                                backgroundImage:
+                                                                    NetworkImage(
+                                                                        '${data['memberPhotoUrl'][0]}'),
+                                                              ),
+                                                            ),
+                                                          if (headcount
+                                                                  .length >=
+                                                              3)
+                                                            Transform.translate(
+                                                              offset: Offset(
+                                                                  35.w, 35.w),
+                                                              child:
+                                                                  CircleAvatar(
+                                                                backgroundColor:
+                                                                    Colors.white
+                                                                        .withOpacity(
+                                                                            0.8),
+                                                                radius: 18.w,
+                                                                child: Center(
+                                                                  child: Text(
+                                                                    '+${headcount.length - 2}',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontSize:
+                                                                          12.w,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    SizedBox(width: 6.w),
+                                                    SizedBox(
+                                                      width: 210.w,
+                                                      child: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                              '${data['title']}',
+                                                              maxLines: 1,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              softWrap: false,
+                                                              style: TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                fontSize: 12.w,
+                                                              )),
+                                                          SizedBox(height: 2.w),
+                                                          Text(
+                                                              '장소: ${data['place']}',
+                                                              style: TextStyle(
+                                                                  fontSize:
+                                                                      10.w)),
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Text(
+                                                                  '약속시간: ${data['targetMonth']}월${data['targetDay']}일 ${data['targetHour']}:${data['targetMinute'].toString().length == 1 ? '0${data['targetMinute']}' : data['targetMinute']}',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          10.w)),
+                                                              Text(
+                                                                  '인원:${headcount.length}/${data['headcount']}',
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          10.w))
+                                                            ],
+                                                          ),
+                                                          Text(
+                                                            '$categoryTextH',
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            softWrap: false,
+                                                            style: TextStyle(
+                                                                fontSize: 10.w),
+                                                          ),
+                                                          SizedBox(height: 3.w),
+                                                          Text('눌러서 자세히 보기',
+                                                              style: TextStyle(
+                                                                  color: Colors
+                                                                      .grey,
+                                                                  fontSize:
+                                                                      10.w))
+                                                        ],
                                                       ),
                                                     ),
                                                   ],
                                                 ),
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              MemberRoomPage(
+                                                                host: host,
+                                                                inProgress:
+                                                                    false,
+                                                              )) //모임 자세히보기
+                                                      );
+                                                },
                                               ),
-                                              SizedBox(width: 6.w),
-                                              SizedBox(
-                                                width: 210.w,
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text('${data['title']}',
-                                                        maxLines: 1,
-                                                        overflow: TextOverflow.ellipsis,
-                                                        softWrap: false,
-                                                        style: TextStyle(
-                                                          fontWeight: FontWeight.w700,
-                                                          fontSize: 12.w,
-                                                        )),
-                                                    SizedBox(height: 2.w),
-                                                    Text('장소: ${data['place']}',
-                                                        style: TextStyle(fontSize: 10.w)),
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                      children: [
-                                                        Text('약속시간: ${data['targetMonth']}월${data['targetDay']}일 ${data['targetHour']}:${data['targetMinute'].toString().length == 1 ? '0${data['targetMinute']}' : data['targetMinute']}',
-                                                            style: TextStyle(fontSize: 10.w)),
-                                                        Text('인원:${headcount.length}/${data['headcount']}',
-                                                            style: TextStyle(fontSize: 10.w))
-                                                      ],
-                                                    ),
-                                                    Text('$categoryTextH',
-                                                      maxLines: 1,
-                                                      overflow: TextOverflow.ellipsis,
-                                                      softWrap: false,
-                                                      style: TextStyle(fontSize: 10.w),
-                                                    ),
-                                                    SizedBox(height: 3.w),
-                                                    Text('눌러서 자세히 보기',
-                                                        style: TextStyle(
-                                                            color: Colors.grey,
-                                                            fontSize: 10.w)
-                                                    )
-                                                  ],
-                                                ),
+                                              SizedBox(width: 4.w),
+                                              StreamBuilder<DocumentSnapshot>(
+                                                stream: _userinfo
+                                                    .collection('room')
+                                                    .doc('attention')
+                                                    .snapshots(),
+                                                builder: (BuildContext context,
+                                                    AsyncSnapshot<
+                                                            DocumentSnapshot>
+                                                        snapshot) {
+                                                  if (snapshot
+                                                          .connectionState ==
+                                                      ConnectionState.waiting)
+                                                    return Text('');
+                                                  Map<String, dynamic>? data =
+                                                      snapshot.data?.data()
+                                                          as Map<String,
+                                                              dynamic>?;
+                                                  List<dynamic> attention =
+                                                      data != null
+                                                          ? data['attention'] ??
+                                                              []
+                                                          : [];
+                                                  return attention.contains(
+                                                              '${activateRoom[idx].id}') !=
+                                                          true
+                                                      ? Container(
+                                                          width: 14.w,
+                                                          alignment: Alignment
+                                                              .bottomCenter,
+                                                          child: InkWell(
+                                                              child: Icon(
+                                                                Icons
+                                                                    .favorite_outline,
+                                                                color: Color(
+                                                                    0xFFEF5350),
+                                                                size: 16.w,
+                                                              ),
+                                                              onTap: () async {
+                                                                attention.add(
+                                                                    '${activateRoom[idx].id}');
+                                                                await _userinfo
+                                                                    .collection(
+                                                                        'room')
+                                                                    .doc(
+                                                                        'attention')
+                                                                    .set({
+                                                                  'attention':
+                                                                      attention,
+                                                                });
+                                                              }),
+                                                        )
+                                                      : Container(
+                                                          width: 14.w,
+                                                          alignment: Alignment
+                                                              .bottomCenter,
+                                                          child: InkWell(
+                                                              child: Icon(
+                                                                Icons.favorite,
+                                                                color: Color(
+                                                                    0xFFEF5350),
+                                                                size: 16.w,
+                                                              ),
+                                                              onTap: () async {
+                                                                final int
+                                                                    indexToRemove =
+                                                                    attention
+                                                                        .indexOf(
+                                                                            '${activateRoom[idx].id}');
+                                                                attention.removeAt(
+                                                                    indexToRemove);
+                                                                await _userinfo
+                                                                    .collection(
+                                                                        'room')
+                                                                    .doc(
+                                                                        'attention')
+                                                                    .set({
+                                                                  'attention':
+                                                                      attention,
+                                                                });
+                                                              }),
+                                                        );
+                                                },
                                               ),
                                             ],
                                           ),
-                                          onTap: () {
-                                            Navigator.push(context,
-                                                MaterialPageRoute(builder: (context) => MemberRoomPage(host: host, inProgress: false,)) //모임 자세히보기
-                                            );
-                                          },
                                         ),
-                                        SizedBox(width: 4.w),
-                                        StreamBuilder<DocumentSnapshot>(
-                                          stream: _userinfo.collection('room').doc('attention').snapshots(),
-                                          builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                                            if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                                            Map<String, dynamic>? data = snapshot.data?.data() as Map<String, dynamic>?;
-                                            List<dynamic> attention = data != null ? data['attention'] ?? [] : [];
-                                            return attention.contains('${activateRoom[idx].id}') != true ?
-                                            Container(
-                                              width: 14.w,
-                                              alignment: Alignment.bottomCenter,
-                                              child: InkWell(
-                                                  child: Icon(
-                                                    Icons.favorite_outline,
-                                                    color: Color(0xFFEF5350),
-                                                    size: 16.w,
-                                                  ),
-                                                  onTap: () async{
-                                                    attention.add('${activateRoom[idx].id}');
-                                                    await _userinfo.collection('room').doc('attention').set({
-                                                      'attention' : attention,
-                                                    });
-                                                  }
-                                              ),
-                                            ) :
-                                            Container(
-                                              width: 14.w,
-                                              alignment: Alignment.bottomCenter,
-                                              child: InkWell(
-                                                  child: Icon(
-                                                    Icons.favorite,
-                                                    color: Color(0xFFEF5350),
-                                                    size: 16.w,
-                                                  ),
-                                                  onTap: () async{
-                                                    final int indexToRemove = attention.indexOf('${activateRoom[idx].id}');
-                                                    attention.removeAt(indexToRemove);
-                                                    await _userinfo.collection('room').doc('attention').set({
-                                                      'attention' : attention,
-                                                    });
-                                                  }
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ) :SizedBox(height:0);
+                                      )
+                                    : SizedBox(height: 0);
                               },
                             );
                           },
-                          separatorBuilder: (ctx, idx){
+                          separatorBuilder: (ctx, idx) {
                             return idx % 5 == 0
                                 ? Column(
-                              children: [
-                                SizedBox(height: 8.w),
-                                bannerAd(),
-                                SizedBox(height: 8.w),
-                              ],
-                            )
+                                    children: [
+                                      SizedBox(height: 8.w),
+                                      bannerAd(),
+                                      SizedBox(height: 8.w),
+                                    ],
+                                  )
                                 : SizedBox(height: 8.w);
                           },
                         );
@@ -1115,8 +1353,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-          )
-      ),
+          )),
     );
   }
 }
@@ -1125,13 +1362,14 @@ class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    _user = FirebaseAuth.instance.currentUser; //widget rebuild 시 currentuser cached repair
+    _user = FirebaseAuth
+        .instance.currentUser; //widget rebuild 시 currentuser cached repair
     var currentVersion;
-    showUpdateAlert(bool required){
+    showUpdateAlert(bool required) {
       return showDialog(
           barrierDismissible: false,
           context: context,
-          builder: (BuildContext context){
+          builder: (BuildContext context) {
             return WillPopScope(
               onWillPop: () async => false,
               child: AlertDialog(
@@ -1143,7 +1381,7 @@ class LoginPage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisSize: MainAxisSize.min,
-                    children:[
+                    children: [
                       Container(
                         alignment: Alignment.center,
                         child: Text(
@@ -1169,7 +1407,8 @@ class LoginPage extends StatelessWidget {
                           Expanded(
                             child: InkWell(
                               child: Container(
-                                padding: EdgeInsets.only(top: 14.w, bottom: 14.w),
+                                padding:
+                                    EdgeInsets.only(top: 14.w, bottom: 14.w),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.only(
@@ -1177,17 +1416,19 @@ class LoginPage extends StatelessWidget {
                                   ),
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Text(
                                       "나중에",
-                                      style: TextStyle(color: Color(0xFF51CF6D)),
+                                      style:
+                                          TextStyle(color: Color(0xFF51CF6D)),
                                       textAlign: TextAlign.center,
                                     ),
                                   ],
                                 ),
                               ),
-                              onTap: (){
+                              onTap: () {
                                 Navigator.pop(context);
                               },
                             ),
@@ -1195,14 +1436,16 @@ class LoginPage extends StatelessWidget {
                           Expanded(
                             child: InkWell(
                               child: Container(
-                                padding: EdgeInsets.only(top: 14.w, bottom: 14.w),
+                                padding:
+                                    EdgeInsets.only(top: 14.w, bottom: 14.w),
                                 decoration: BoxDecoration(
                                   color: Color(0xFF51CF6D),
                                   borderRadius: BorderRadius.only(
                                       bottomRight: Radius.circular(12.w)),
                                 ),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
                                     Text(
                                       "업데이트",
@@ -1212,7 +1455,7 @@ class LoginPage extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              onTap: (){
+                              onTap: () {
                                 Navigator.pop(context);
                               },
                             ),
@@ -1224,38 +1467,36 @@ class LoginPage extends StatelessWidget {
                 ),
               ),
             );
-          }
-      );
+          });
     }
 
     return ScreenUtilInit(
       designSize: Size(360, 800),
       minTextAdapt: true,
-      builder:(context, child)=> StreamBuilder(
+      builder: (context, child) => StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         initialData: _user,
-        builder: (context, snapshot){
-          if(!snapshot.hasData){
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
             return MaterialApp(
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
                 textButtonTheme: TextButtonThemeData(
                     style: ButtonStyle(
-                        foregroundColor: MaterialStateProperty.all<Color>(Color(0xFF51CF6D)),
-                        overlayColor: MaterialStateProperty.all<Color>(Colors.transparent)
-                    )
-                ),
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Color(0xFF51CF6D)),
+                        overlayColor: MaterialStateProperty.all<Color>(
+                            Colors.transparent))),
                 inputDecorationTheme: InputDecorationTheme(
-                 labelStyle: TextStyle(color: Color(0xFF51CF6D)),
+                  labelStyle: TextStyle(color: Color(0xFF51CF6D)),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Color(0xFF51CF6D)
-                    ),
+                    borderSide: BorderSide(color: Color(0xFF51CF6D)),
                   ),
                 ),
                 elevatedButtonTheme: ElevatedButtonThemeData(
-                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF51CF6D)))
-                ),
+                    style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Color(0xFF51CF6D)))),
                 fontFamily: 'Pretendard',
                 highlightColor: Colors.transparent,
                 splashColor: Colors.transparent,
@@ -1265,105 +1506,132 @@ class LoginPage extends StatelessWidget {
                 providerConfigs: [
                   PhoneProviderConfiguration(),
                 ],
-                headerBuilder: (context, constraints, shirinkOffset){
+                headerBuilder: (context, constraints, shirinkOffset) {
                   return Center(
-                    child: Icon(Icons.waving_hand, size: 150.w, color: Color(0xFF51CF6D),)
-                  );
+                      child: Icon(
+                    Icons.waving_hand,
+                    size: 150.w,
+                    color: Color(0xFF51CF6D),
+                  ));
                 },
                 showAuthActionSwitch: false,
                 headerMaxExtent: 500.h,
               ),
               localizationsDelegates: [
-                FlutterFireUILocalizations.withDefaultOverrides(const LabelOverrides()),
+                FlutterFireUILocalizations.withDefaultOverrides(
+                    const LabelOverrides()),
               ],
             );
           }
           _user = FirebaseAuth.instance.currentUser;
-          _userinfo = FirebaseFirestore.instance.collection('users').doc(_user!.uid);
+          _userinfo =
+              FirebaseFirestore.instance.collection('users').doc(_user!.uid);
           return FutureBuilder<DocumentSnapshot>(
               future: _userinfo.get(),
-              builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
                 _user = FirebaseAuth.instance.currentUser;
-                _userinfo = FirebaseFirestore.instance.collection('users').doc(_user!.uid);
-              if(snapshot.connectionState == ConnectionState.waiting){
-                return Scaffold(
-                  body: Container(
-                    width: double.infinity, height: double.infinity, color: Color(0xFF51CF6D),
-                      child: Center(
-                          child: Text('오늘\n모임.',
-                            style: TextStyle(
-                                fontSize: 48.w,
-                                color: Colors.white,
-                                decorationStyle: null,
-                                fontFamily: 'room703',
-                            ),
-                          )
-                      )
-                  ),
-                );
-              } else if(snapshot.hasError){
-                return LoginPage();
-              }else if(!snapshot.hasData || snapshot.data!.data() == null){
-                return AccountBuild();
-              }
-              Map<String, dynamic>? infoData = snapshot.data?.data() as Map<String, dynamic>?;
-              if(infoData == null) return AccountBuild();
-              final accountPhoneNum = infoData['phonenumber'];
-              DateTime currentDay = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-              var lastConnect =  infoData['lastConnect'];
-              if(lastConnect != null) lastConnect = lastConnect.toDate();
-              lastConnect ??= DateTime(2000, 1, 1);
-              if(lastConnect.isBefore(currentDay)){
-                if(lastConnect.day <= 31 && currentDay.day >= 1){
-                  _userinfo.update({
-                    'lastConnect':currentDay,
-                    'canMessage':5,
-                  });
-                }else{
-                  _userinfo.update({
-                    'lastConnect':currentDay,
-                  });
+                _userinfo = FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(_user!.uid);
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Scaffold(
+                    body: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: Color(0xFF51CF6D),
+                        child: Center(
+                            child: Text(
+                          '오늘\n모임.',
+                          style: TextStyle(
+                            fontSize: 48.w,
+                            color: Colors.white,
+                            decorationStyle: null,
+                            fontFamily: 'room703',
+                          ),
+                        ))),
+                  );
+                } else if (snapshot.hasError) {
+                  return LoginPage();
+                } else if (!snapshot.hasData || snapshot.data!.data() == null) {
+                  return AccountBuild();
                 }
-              }
-              //version check
-                rootBundle.loadString("pubspec.yaml").then((value){
+                Map<String, dynamic>? infoData =
+                    snapshot.data?.data() as Map<String, dynamic>?;
+                if (infoData == null) return AccountBuild();
+                final accountPhoneNum = infoData['phonenumber'];
+                DateTime currentDay = DateTime(DateTime.now().year,
+                    DateTime.now().month, DateTime.now().day);
+                var lastConnect = infoData['lastConnect'];
+                if (lastConnect != null) lastConnect = lastConnect.toDate();
+                lastConnect ??= DateTime(2000, 1, 1);
+                if (lastConnect.isBefore(currentDay)) {
+                  if (lastConnect.day <= 31 && currentDay.day >= 1) {
+                    _userinfo.update({
+                      'lastConnect': currentDay,
+                      'canMessage': 5,
+                    });
+                  } else {
+                    _userinfo.update({
+                      'lastConnect': currentDay,
+                    });
+                  }
+                }
+                //version check
+                rootBundle.loadString("pubspec.yaml").then((value) {
                   var yamlData = loadYaml(value);
                   currentVersion = yamlData['version'];
                 });
-                WidgetsBinding.instance.addPostFrameCallback((_) async{
-                  final versionData = await FirebaseFirestore.instance.collection('appInfo').doc('version').get();
+                WidgetsBinding.instance.addPostFrameCallback((_) async {
+                  final versionData = await FirebaseFirestore.instance
+                      .collection('appInfo')
+                      .doc('version')
+                      .get();
                   var newestVersion = versionData.get('newest');
                   var requiredVersion = versionData.get('required');
-                  currentVersion = currentVersion.toString().replaceAll('.', '').replaceAll('+', '');
+                  currentVersion = currentVersion
+                      .toString()
+                      .replaceAll('.', '')
+                      .replaceAll('+', '');
                   currentVersion = int.parse(currentVersion);
-                  newestVersion = newestVersion.toString().replaceAll('.', '').replaceAll('+', '');
+                  newestVersion = newestVersion
+                      .toString()
+                      .replaceAll('.', '')
+                      .replaceAll('+', '');
                   newestVersion = int.parse(newestVersion);
-                  requiredVersion = requiredVersion.toString().replaceAll('.', '').replaceAll('+', '');
+                  requiredVersion = requiredVersion
+                      .toString()
+                      .replaceAll('.', '')
+                      .replaceAll('+', '');
                   requiredVersion = int.parse(requiredVersion);
-                  if(currentVersion < newestVersion){
+                  if (currentVersion < newestVersion) {
                     late bool requiredExist;
-                    currentVersion < requiredVersion ? requiredExist = true : requiredExist = false;
+                    currentVersion < requiredVersion
+                        ? requiredExist = true
+                        : requiredExist = false;
                     showUpdateAlert(requiredExist);
                   }
                 });
 
-              return FutureBuilder<DocumentSnapshot>(
-                future: FirebaseFirestore.instance.collection('bannedUsers').doc(accountPhoneNum).get(),
-                builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                  Map<String, dynamic>? blockUserData = snapshot.data?.data() as Map<String, dynamic>?;
-                  if(blockUserData == null){
-                    return ProgressHUD(child: MyApp());
-                  }else{
-                    return BannedPage(bannedUser: accountPhoneNum);
-                  }
-                },
-              );
-              }
-          );
+                return FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('bannedUsers')
+                      .doc(accountPhoneNum)
+                      .get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    Map<String, dynamic>? blockUserData =
+                        snapshot.data?.data() as Map<String, dynamic>?;
+                    if (blockUserData == null) {
+                      return ProgressHUD(child: MyApp());
+                    } else {
+                      return BannedPage(bannedUser: accountPhoneNum);
+                    }
+                  },
+                );
+              });
         },
       ),
     );
   }
 }
-
-
