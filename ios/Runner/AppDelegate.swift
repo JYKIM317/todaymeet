@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import workmanager
+import GoogleMaps
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {

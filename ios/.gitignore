@@ -4,7 +4,6 @@
 *.moved-aside
 *.pbxuser
 *.perspectivev3
-*.exe
 **/*sync/
 .sconsign.dblite
 .tags*
