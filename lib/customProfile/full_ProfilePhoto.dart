@@ -14,7 +14,7 @@ class FullScreenPhoto extends StatelessWidget {
             child: Image.network(photo),
           ),
         ),
-        onTap: (){
+        onTap: () {
           Navigator.pop(context);
         },
       ),

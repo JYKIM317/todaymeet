@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:famet/customProfile/people_Profile_View.dart';
+
 /*
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -50,7 +51,12 @@ class Chatting extends StatefulWidget {
   final chatAdress;
   final title;
   final hostUID;
-  const Chatting({Key? key, required this.chatAdress, required this.title, required this.hostUID}) : super(key: key);
+  const Chatting(
+      {Key? key,
+      required this.chatAdress,
+      required this.title,
+      required this.hostUID})
+      : super(key: key);
   @override
   State<Chatting> createState() => _ChattingState();
 }
@@ -64,12 +70,19 @@ class _ChattingState extends State<Chatting> {
   @override
   void initState() {
     _user = FirebaseAuth.instance.currentUser;
-    chatRoom = FirebaseFirestore.instance.collection('chatRoom').doc('available').collection(widget.chatAdress);
+    chatRoom = FirebaseFirestore.instance
+        .collection('chatRoom')
+        .doc('available')
+        .collection(widget.chatAdress);
     super.initState();
   }
-  getUserData() async{
+
+  getUserData() async {
     final List<String> userData = [];
-    final database = await FirebaseFirestore.instance.collection('users').doc('${_user!.uid}').get();
+    final database = await FirebaseFirestore.instance
+        .collection('users')
+        .doc('${_user!.uid}')
+        .get();
     final username = await database.get('username');
     final photoUrl = await database.get('photoUrl');
     userData.add(username);
@@ -92,176 +105,217 @@ class _ChattingState extends State<Chatting> {
                 alignment: Alignment.centerLeft,
                 height: 70.w,
                 decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.5),width: 2))
-                ),
+                    border: Border(
+                        bottom: BorderSide(
+                            color: Colors.grey.withOpacity(0.5), width: 2))),
                 padding: EdgeInsets.fromLTRB(8.w, 16.w, 0, 0),
                 child: Text('멤버', style: TextStyle(fontSize: 24.w)),
               ),
               Expanded(
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(10.w, 0, 0, 10.w),
-                    child: FutureBuilder<DocumentSnapshot>(
-                      future: chatRoom.doc('info').get(),
-                      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-                        if(snapshot.hasError) return Text('');
-                        if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                        Map<String, dynamic>? info = snapshot.data?.data() as Map<String, dynamic>?;
-                        if(info == null) return Text('');
-                        List memberUID = info['member'];
-                        return ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: memberUID.length,
-                          itemBuilder: (BuildContext ctx, int idx){
-                            return FutureBuilder(
-                              future: FirebaseFirestore.instance.collection('users').doc('${memberUID[idx]}').get(),
-                              builder: (BuildContext context, AsyncSnapshot snapshot){
-                                if(snapshot.hasError) return Text('오류가 발생했습니다.');
-                                if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                                Map<String, dynamic>? data = snapshot.data?.data() as Map<String, dynamic>?;
-                                if(data == null) return SizedBox(height: 0);
-                                return InkWell(
-                                  child: Row(
+                padding: EdgeInsets.fromLTRB(10.w, 0, 0, 10.w),
+                child: FutureBuilder<DocumentSnapshot>(
+                  future: chatRoom.doc('info').get(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    if (snapshot.hasError) return Text('');
+                    if (snapshot.connectionState == ConnectionState.waiting)
+                      return Text('');
+                    Map<String, dynamic>? info =
+                        snapshot.data?.data() as Map<String, dynamic>?;
+                    if (info == null) return Text('');
+                    List memberUID = info['member'];
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      itemCount: memberUID.length,
+                      itemBuilder: (BuildContext ctx, int idx) {
+                        return FutureBuilder(
+                          future: FirebaseFirestore.instance
+                              .collection('users')
+                              .doc('${memberUID[idx]}')
+                              .get(),
+                          builder:
+                              (BuildContext context, AsyncSnapshot snapshot) {
+                            if (snapshot.hasError) return Text('오류가 발생했습니다.');
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) return Text('');
+                            Map<String, dynamic>? data =
+                                snapshot.data?.data() as Map<String, dynamic>?;
+                            if (data == null) return SizedBox(height: 0);
+                            return InkWell(
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                      backgroundColor: Colors.grey,
+                                      radius: 22.w,
+                                      backgroundImage:
+                                          NetworkImage(data['photoUrl'])),
+                                  SizedBox(width: 8.w),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      CircleAvatar(
-                                          backgroundColor: Colors.grey,
-                                          radius: 22.w,
-                                          backgroundImage: NetworkImage(data['photoUrl'])
+                                      ConstrainedBox(
+                                        constraints:
+                                            BoxConstraints(maxWidth: 120.w),
+                                        child: Text(
+                                          '${data['username']}',
+                                          style: TextStyle(fontSize: 18.w),
+                                        ),
                                       ),
-                                      SizedBox(width: 8.w),
-                                      Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          ConstrainedBox(
-                                            constraints: BoxConstraints(maxWidth: 120.w),
-                                            child: Text('${data['username']}',
-                                              style: TextStyle(fontSize: 18.w),
-                                            ),
+                                      ConstrainedBox(
+                                        constraints:
+                                            BoxConstraints(maxWidth: 120.w),
+                                        child: Text(
+                                          "${data['introduce'] ?? ''.toString().replaceAll('\n', ' ')}",
+                                          style: TextStyle(
+                                            fontSize: 16.w,
+                                            color: Colors.grey,
                                           ),
-                                          ConstrainedBox(
-                                            constraints: BoxConstraints(maxWidth: 120.w),
-                                            child: Text("${data['introduce'] ?? ''.toString().replaceAll('\n', ' ')}",
-                                              style: TextStyle(fontSize: 16.w, color: Colors.grey,),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ],
                                   ),
-                                  onTap: (){
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) => OtherProfile(user: memberUID[idx]))
-                                    );
-                                  },
-                                );
+                                ],
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => OtherProfile(
+                                            user: memberUID[idx])));
                               },
                             );
                           },
-                          separatorBuilder: (ctx, idx){
-                            return SizedBox(height: 12.w);
-                          },
                         );
                       },
-                    ),
-                  )
-              ),
+                      separatorBuilder: (ctx, idx) {
+                        return SizedBox(height: 12.w);
+                      },
+                    );
+                  },
+                ),
+              )),
               Container(
                 alignment: Alignment.centerRight,
                 height: 60.w,
                 decoration: BoxDecoration(
-                    border: Border(top: BorderSide(color: Colors.grey.withOpacity(0.5),width: 2))
-                ),
+                    border: Border(
+                        top: BorderSide(
+                            color: Colors.grey.withOpacity(0.5), width: 2))),
                 padding: EdgeInsets.only(left: 16.w),
                 child: Center(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        InkWell(
-                            child: Icon(Icons.logout, size: 22.w, color: Colors.grey,),
-                          onTap: ()async{
-                              isGroup ?
-                              showDialog(
-                              barrierDismissible: true,
-                              context: context,
-                              builder: (BuildContext context){
-                                return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6.w)
-                                  ),
-                                  content: Text("모임 대화방은 나가실 수 없습니다."),
-                                );
-                              })
-                              : showDialog(
-                                  barrierDismissible: true,
-                                  context: context,
-                                  builder: (BuildContext context){
-                                    return AlertDialog(
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(6.w)
-                                      ),
-                                      content: Text("정말 대화방을 나가시겠습니까?"),
-                                      actions: [
-                                        TextButton(
-                                            child: Text('취소하기',
-                                                style: TextStyle(
-                                                  color: Colors.grey,
-                                                  fontSize: 12.w,
-                                                )
-                                            ),
-                                            onPressed: (){
-                                              Navigator.of(context).pop();
-                                            }
-                                        ),
-                                        TextButton(
-                                            child: Text('나가기',
-                                                style: TextStyle(
-                                                  color: Color(0xFF51CF6D),
-                                                  fontSize: 12.w,
-                                                )
-                                            ),
-                                            onPressed: () async{
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
-                                              Navigator.pop(context);
-                                              int memberindex = members.indexOf(_user!.uid);
-                                              members.removeAt(memberindex);
-                                              memberToken.removeAt(memberindex);
-                                              if(memberindex == 0){
-                                                memberphotos = memberphotos.reversed.toList();
-                                                titles = titles.reversed.toList();
-                                                if(members.isEmpty){
-                                                  await chatRoom.get().then((messageSnapshot){
-                                                    for (DocumentSnapshot doc in messageSnapshot.docs){
-                                                      Map<String, dynamic> doneMessage = doc.data() as Map<String, dynamic>;
-                                                      FirebaseFirestore.instance
-                                                          .collection('chatRoom').doc('done')
-                                                          .collection('${DateTime.now().year}.${DateTime.now().month}.${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}_${widget.chatAdress}')
-                                                          .doc('${doc.id}').set(doneMessage);
-                                                      doc.reference.delete();
-                                                    }
-                                                  });
-                                                }
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    InkWell(
+                      child: Icon(
+                        Icons.logout,
+                        size: 22.w,
+                        color: Colors.grey,
+                      ),
+                      onTap: () async {
+                        isGroup
+                            ? showDialog(
+                                barrierDismissible: true,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(6.w)),
+                                    content: Text("모임 대화방은 나가실 수 없습니다."),
+                                  );
+                                })
+                            : showDialog(
+                                barrierDismissible: true,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(6.w)),
+                                    content: Text("정말 대화방을 나가시겠습니까?"),
+                                    actions: [
+                                      TextButton(
+                                          child: Text('취소하기',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 12.w,
+                                              )),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          }),
+                                      TextButton(
+                                          child: Text('나가기',
+                                              style: TextStyle(
+                                                color: Color(0xFF51CF6D),
+                                                fontSize: 12.w,
+                                              )),
+                                          onPressed: () async {
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                            int memberindex =
+                                                members.indexOf(_user!.uid);
+                                            members.removeAt(memberindex);
+                                            memberToken.removeAt(memberindex);
+                                            if (memberindex == 0) {
+                                              memberphotos = memberphotos
+                                                  .reversed
+                                                  .toList();
+                                              titles = titles.reversed.toList();
+                                              if (members.isEmpty) {
+                                                await chatRoom
+                                                    .get()
+                                                    .then((messageSnapshot) {
+                                                  for (DocumentSnapshot doc
+                                                      in messageSnapshot.docs) {
+                                                    Map<String, dynamic>
+                                                        doneMessage = doc.data()
+                                                            as Map<String,
+                                                                dynamic>;
+                                                    FirebaseFirestore.instance
+                                                        .collection('chatRoom')
+                                                        .doc('done')
+                                                        .collection(
+                                                            '${DateTime.now().year}.${DateTime.now().month}.${DateTime.now().day} ${DateTime.now().hour}:${DateTime.now().minute}_${widget.chatAdress}')
+                                                        .doc('${doc.id}')
+                                                        .set(doneMessage);
+                                                    doc.reference.delete();
+                                                  }
+                                                });
                                               }
-                                              await chatRoom.doc('info').update({
-                                                'member':members,
-                                                'memberPhotoUrl':memberphotos,
-                                                'memberTokenList':memberToken,
-                                                'title':titles,
-                                              });
-                                              await FirebaseFirestore.instance
-                                                  .collection('users').doc(_user!.uid)
-                                                  .collection('chat').doc(widget.chatAdress).delete();
                                             }
-                                        ),
-                                      ],
-                                    );
-                                  });
-                          },
-                        ),
-                        SizedBox(width: 24.w,),
-                        Icon(Icons.notifications_active, size: 22.w, color: Colors.grey,)
-                      ],
-                    )),
+                                            await chatRoom.doc('info').update({
+                                              'member': members,
+                                              'memberPhotoUrl': memberphotos,
+                                              'memberTokenList': memberToken,
+                                              'title': titles,
+                                            });
+                                            await FirebaseFirestore.instance
+                                                .collection('users')
+                                                .doc(_user!.uid)
+                                                .collection('chat')
+                                                .doc(widget.chatAdress)
+                                                .delete();
+                                          }),
+                                    ],
+                                  );
+                                });
+                      },
+                    ),
+                    SizedBox(
+                      width: 24.w,
+                    ),
+                    Icon(
+                      Icons.notifications_active,
+                      size: 22.w,
+                      color: Colors.grey,
+                    )
+                  ],
+                )),
               ),
             ],
           ),
@@ -277,8 +331,11 @@ class _ChattingState extends State<Chatting> {
                 children: [
                   SizedBox(
                     child: InkWell(
-                      child: Icon(Icons.arrow_back_ios,color: Colors.grey, size: 22.w),
-                      onTap: (){Navigator.pop(context);},
+                      child: Icon(Icons.arrow_back_ios,
+                          color: Colors.grey, size: 22.w),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
                   SizedBox(width: 4.w),
@@ -290,14 +347,13 @@ class _ChattingState extends State<Chatting> {
                         Container(
                           padding: EdgeInsets.fromLTRB(10.w, 0, 10.w, 10.w),
                           decoration: BoxDecoration(
-                              border:Border(
+                              border: Border(
                                   bottom: BorderSide(
-                                      color: Color(0xFF51CF6D),
-                                      width: 1
-                                  )
-                              )
-                          ),
-                          child: Text(widget.hostUID != _user!.uid ? '${widget.title[0]}' : '${widget.title[1]}',
+                                      color: Color(0xFF51CF6D), width: 1))),
+                          child: Text(
+                            widget.hostUID != _user!.uid
+                                ? '${widget.title[0]}'
+                                : '${widget.title[1]}',
                             style: TextStyle(
                               fontSize: 18.w,
                               fontWeight: FontWeight.w700,
@@ -311,7 +367,7 @@ class _ChattingState extends State<Chatting> {
                   SizedBox(
                     child: InkWell(
                       child: Icon(Icons.menu, color: Colors.grey, size: 22.w),
-                      onTap: (){
+                      onTap: () {
                         scaffoldKey.currentState!.openEndDrawer();
                       },
                     ),
@@ -325,21 +381,24 @@ class _ChattingState extends State<Chatting> {
                   physics: BouncingScrollPhysics(),
                   child: StreamBuilder<QuerySnapshot>(
                     stream: chatRoom.snapshots(),
-                    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-                      if(snapshot.connectionState == ConnectionState.waiting) return Text('');
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        return Text('');
                       List<DocumentSnapshot>? chatList = snapshot.data!.docs;
                       members = chatList.first.get('member');
                       memberToken = chatList.first.get('memberTokenList');
                       isGroup = chatList.first.get('isGroup');
-                      if(isGroup == false){
+                      if (isGroup == false) {
                         memberphotos = chatList.first.get('memberPhotoUrl');
                         titles = chatList.first.get('title');
                       }
-                      if(!snapshot.hasData){
+                      if (!snapshot.hasData) {
                         return SizedBox(
                           height: 102.w,
                           child: Center(
-                            child: Text('대화방이 존재하지 않습니다.',
+                            child: Text(
+                              '대화방이 존재하지 않습니다.',
                               style: TextStyle(
                                 fontSize: 22.w,
                                 color: Colors.grey,
@@ -349,127 +408,183 @@ class _ChattingState extends State<Chatting> {
                         );
                       }
                       chatList.removeAt(0);
-                      if(isGroup){
+                      if (isGroup) {
                         int chatCount = chatList.length;
-                        if(chatCount % 20 == 0){
+                        if (chatCount % 20 == 0) {
                           chatRoom.doc('message_${DateTime.now()}_system').set({
-                            'sendTime':DateTime.now(),
-                            'text':'그룹 대화방은 모임 시작 후 24시간 뒤 해체됩니다.',
-                            'uid':'system'
+                            'sendTime': DateTime.now(),
+                            'text': '그룹 대화방은 모임 시작 후 24시간 뒤 해체됩니다.',
+                            'uid': 'system'
                           });
                         }
                       }
-                      return chatList.isNotEmpty ? ListView.separated(
-                        shrinkWrap: true,
-                        physics: BouncingScrollPhysics(),
-                        itemCount: chatList.length,
-                        itemBuilder: (BuildContext ctx, int idx){
-                          String? userUid = chatList[idx]['uid'];
-                          DateTime messageTime = chatList[idx]['sendTime'] == null ? DateTime(9999,12,31,23,59) : chatList[idx]['sendTime'].toDate();
-                          print(chatList[idx]['text']);
-                          return userUid != _user!.uid ?
-                          userUid != 'system' ?
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                InkWell(
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.grey,
-                                    radius: 32.w,
-                                    backgroundImage: NetworkImage('${chatList[idx]['photoUrl']}'),
-                                  ),
-                                  onTap: (){
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) => OtherProfile(user: chatList[idx]['uid']))
-                                    );
-                                  },
-                                ),
-                                SizedBox(width: 6.w),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: 2.w),
-                                    Text('${chatList[idx]['username']}',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 16.w,
-                                        )
-                                    ),
-                                    SizedBox(height: 2.w),
-                                    Row(
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(4.w),
-                                            ),
-                                            padding: EdgeInsets.fromLTRB(6.w, 6.w, 6.w, 6.w),
+                      return chatList.isNotEmpty
+                          ? ListView.separated(
+                              shrinkWrap: true,
+                              physics: BouncingScrollPhysics(),
+                              itemCount: chatList.length,
+                              itemBuilder: (BuildContext ctx, int idx) {
+                                String? userUid = chatList[idx]['uid'];
+                                DateTime messageTime =
+                                    chatList[idx]['sendTime'] == null
+                                        ? DateTime(9999, 12, 31, 23, 59)
+                                        : chatList[idx]['sendTime'].toDate();
+                                print(chatList[idx]['text']);
+                                return userUid != _user!.uid
+                                    ? userUid != 'system'
+                                        ? Container(
                                             alignment: Alignment.centerLeft,
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                InkWell(
+                                                  child: CircleAvatar(
+                                                    backgroundColor:
+                                                        Colors.grey,
+                                                    radius: 32.w,
+                                                    backgroundImage: NetworkImage(
+                                                        '${chatList[idx]['photoUrl']}'),
+                                                  ),
+                                                  onTap: () {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                OtherProfile(
+                                                                    user: chatList[
+                                                                            idx]
+                                                                        [
+                                                                        'uid'])));
+                                                  },
+                                                ),
+                                                SizedBox(width: 6.w),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    SizedBox(height: 2.w),
+                                                    Text(
+                                                        '${chatList[idx]['username']}',
+                                                        style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.w700,
+                                                          fontSize: 16.w,
+                                                        )),
+                                                    SizedBox(height: 2.w),
+                                                    Row(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .end,
+                                                      children: [
+                                                        Container(
+                                                            decoration:
+                                                                BoxDecoration(
+                                                              color:
+                                                                  Colors.white,
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          4.w),
+                                                            ),
+                                                            padding: EdgeInsets
+                                                                .fromLTRB(
+                                                                    6.w,
+                                                                    6.w,
+                                                                    6.w,
+                                                                    6.w),
+                                                            alignment: Alignment
+                                                                .centerLeft,
+                                                            child:
+                                                                ConstrainedBox(
+                                                              constraints:
+                                                                  BoxConstraints(
+                                                                      maxWidth:
+                                                                          180.w),
+                                                              child: Text(
+                                                                '${chatList[idx]['text']}',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        14.w),
+                                                              ),
+                                                            )),
+                                                        SizedBox(width: 4.w),
+                                                        Text(
+                                                          '${messageTime.hour.toString()}:${messageTime.minute.toString().length == 1 ? '0${messageTime.minute}' : '${messageTime.minute}'}',
+                                                          style: TextStyle(
+                                                              fontSize: 10.w),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        : Container(
+                                            decoration: BoxDecoration(
+                                              color: Colors.grey,
+                                              borderRadius:
+                                                  BorderRadius.horizontal(
+                                                      left:
+                                                          Radius.circular(8.w),
+                                                      right:
+                                                          Radius.circular(8.w)),
+                                            ),
+                                            padding: EdgeInsets.fromLTRB(
+                                                6.w, 6.w, 6.w, 6.w),
+                                            alignment: Alignment.center,
                                             child: ConstrainedBox(
-                                              constraints: BoxConstraints(maxWidth: 180.w),
-                                              child: Text('${chatList[idx]['text']}',style: TextStyle(fontSize: 14.w),),
-                                            )
-                                        ),
-                                        SizedBox(width: 4.w),
-                                        Text('${messageTime.hour.toString()}:${messageTime.minute.toString().length == 1 ? '0${messageTime.minute}':'${messageTime.minute}'}',
-                                          style: TextStyle(fontSize: 10.w),),
-                                      ],
-                                    )
-                                  ],
-                                )
-                              ],
-                            ),
-                          ): Container(
-                              decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius: BorderRadius.horizontal(
-                                    left: Radius.circular(8.w),
-                                    right: Radius.circular(8.w)
-                                ),
-                              ),
-                              padding: EdgeInsets.fromLTRB(6.w, 6.w, 6.w, 6.w),
-                              alignment: Alignment.center,
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(maxWidth: 180.w),
-                                child: Text('${chatList[idx]['text']}',
-                                  style: TextStyle(fontSize: 14.w, color: Colors.white),
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                          ):
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text('${messageTime.hour.toString()}:${messageTime.minute.toString().length == 1 ? '0${messageTime.minute}':'${messageTime.minute}'}',
-                                style: TextStyle(fontSize: 10.w),),
-                              SizedBox(width: 4.w),
-                              Container(
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFD6D6D6),
-                                    borderRadius: BorderRadius.circular(4.w),
-                                  ),
-                                  padding: EdgeInsets.fromLTRB(6.w, 6.w, 6.w, 6.w),
-                                  alignment: Alignment.centerRight,
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(maxWidth: 180.w),
-                                    child: Text('${chatList[idx]['text']}',
-                                      style: TextStyle(fontSize: 14.w),
-                                      textAlign: TextAlign.end,
-                                    ),
-                                  )
-                              ),
-                            ],
-                          );
-                        },
-                        separatorBuilder: (ctx, idx){
-                          return SizedBox(height: 12.w);
-                        },
-                      ):SizedBox(height: 0);
+                                              constraints: BoxConstraints(
+                                                  maxWidth: 180.w),
+                                              child: Text(
+                                                '${chatList[idx]['text']}',
+                                                style: TextStyle(
+                                                    fontSize: 14.w,
+                                                    color: Colors.white),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ))
+                                    : Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            '${messageTime.hour.toString()}:${messageTime.minute.toString().length == 1 ? '0${messageTime.minute}' : '${messageTime.minute}'}',
+                                            style: TextStyle(fontSize: 10.w),
+                                          ),
+                                          SizedBox(width: 4.w),
+                                          Container(
+                                              decoration: BoxDecoration(
+                                                color: Color(0xFFD6D6D6),
+                                                borderRadius:
+                                                    BorderRadius.circular(4.w),
+                                              ),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  6.w, 6.w, 6.w, 6.w),
+                                              alignment: Alignment.centerRight,
+                                              child: ConstrainedBox(
+                                                constraints: BoxConstraints(
+                                                    maxWidth: 180.w),
+                                                child: Text(
+                                                  '${chatList[idx]['text']}',
+                                                  style:
+                                                      TextStyle(fontSize: 14.w),
+                                                  textAlign: TextAlign.end,
+                                                ),
+                                              )),
+                                        ],
+                                      );
+                              },
+                              separatorBuilder: (ctx, idx) {
+                                return SizedBox(height: 12.w);
+                              },
+                            )
+                          : SizedBox(height: 0);
                     },
                   ),
                 ),
@@ -504,10 +619,13 @@ class _ChattingState extends State<Chatting> {
                 width: 46.w,
                 height: 62.w,
                 color: Color(0xFF51CF6D),
-                child: Icon(Icons.shortcut, color: Colors.white,),
+                child: Icon(
+                  Icons.shortcut,
+                  color: Colors.white,
+                ),
               ),
-              onTap: ()async{
-                if(messageController.text.isNotEmpty){
+              onTap: () async {
+                if (messageController.text.isNotEmpty) {
                   final textData = messageParameter;
                   messageController.clear();
                   messageParameter = messageController.text;
@@ -521,41 +639,56 @@ class _ChattingState extends State<Chatting> {
                     title: userData[0],
                     body: messageParameter,
                   );*/
-                  await chatRoom.doc('message_${sendTime.toString()}_${_user!.uid}').set({
-                    'sendTime':sendTime,
-                    'username':userData[0],
-                    'photoUrl':userData[1],
-                    'text':textData,
-                    'uid':_user!.uid
+                  await chatRoom
+                      .doc('message_${sendTime.toString()}_${_user!.uid}')
+                      .set({
+                    'sendTime': sendTime,
+                    'username': userData[0],
+                    'photoUrl': userData[1],
+                    'text': textData,
+                    'uid': _user!.uid
                   });
                   await chatRoom.doc('info').update({
-                    'newestTime':sendTime,
-                    'newestMessage':textData.replaceAll('\n', ' '),
+                    'newestTime': sendTime,
+                    'newestMessage': textData.replaceAll('\n', ' '),
                   });
-                  if(!isGroup){
-                    if(userindex!=0){
+                  if (!isGroup) {
+                    if (userindex != 0) {
                       FirebaseFirestore.instance
-                          .collection('users').doc(members[0])
-                          .collection('chat').doc(widget.chatAdress).set({'recent':DateTime.now(), 'read':1});
-                    }else if(userindex!=1){
+                          .collection('users')
+                          .doc(members[0])
+                          .collection('chat')
+                          .doc(widget.chatAdress)
+                          .set({'recent': DateTime.now(), 'read': 1});
+                    } else if (userindex != 1) {
                       FirebaseFirestore.instance
-                          .collection('users').doc(members[1])
-                          .collection('chat').doc(widget.chatAdress).set({'recent':DateTime.now(), 'read':1});
+                          .collection('users')
+                          .doc(members[1])
+                          .collection('chat')
+                          .doc(widget.chatAdress)
+                          .set({'recent': DateTime.now(), 'read': 1});
                     }
-                    if(userindex == -1){
+                    if (userindex == -1) {
                       members.add(_user!.uid);
-                      final currentUser = await FirebaseFirestore.instance.collection('users').doc(_user!.uid).get();
-                      Map<String, dynamic>? currentUserData = currentUser.data() as Map<String, dynamic>?;
+                      final currentUser = await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(_user!.uid)
+                          .get();
+                      Map<String, dynamic>? currentUserData =
+                          currentUser.data() as Map<String, dynamic>?;
                       memberToken.add(currentUserData!['pushToken']);
                       await chatRoom.doc('info').update({
-                        'member':members,
-                        'memberTokenList':memberToken,
+                        'member': members,
+                        'memberTokenList': memberToken,
                       });
                       await FirebaseFirestore.instance
-                          .collection('users').doc(_user!.uid)
-                          .collection('chat').doc(widget.chatAdress).set({
-                        'read':0,
-                        'recent':DateTime.now(),
+                          .collection('users')
+                          .doc(_user!.uid)
+                          .collection('chat')
+                          .doc(widget.chatAdress)
+                          .set({
+                        'read': 0,
+                        'recent': DateTime.now(),
                       });
                     }
                   }

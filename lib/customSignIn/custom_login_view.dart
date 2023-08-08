@@ -13,9 +13,9 @@ import 'package:flutterfire_ui/src/auth/widgets/internal/title.dart';
 import 'custom_phone_verification_button.dart';
 
 typedef CustomAuthViewContentBuilder = Widget Function(
-    BuildContext context,
-    AuthAction action,
-    );
+  BuildContext context,
+  AuthAction action,
+);
 
 class CustomLoginView extends StatefulWidget {
   final FirebaseAuth? auth;
@@ -157,8 +157,8 @@ class CustomLoginViewState extends State<CustomLoginView> {
               TextSpan(
                 text: actionText,
                 style: Theme.of(context).textTheme.button?.copyWith(
-                  color: registerTextColor,
-                ),
+                      color: registerTextColor,
+                    ),
                 mouseCursor: SystemMouseCursors.click,
                 recognizer: TapGestureRecognizer()
                   ..onTap = () => _handleDifferentAuthAction(context),

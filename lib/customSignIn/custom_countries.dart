@@ -219,7 +219,7 @@ final countries = [
 
 final countriesByCountryCode = countries.fold<Map<String, CountryCodeItem>>(
   {},
-      (previousValue, element) {
+  (previousValue, element) {
     previousValue[element.countryCode] = element;
     return previousValue;
   },

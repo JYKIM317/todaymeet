@@ -14,16 +14,23 @@ class Notice extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.fromLTRB(24.w, 48.w, 24.w, 24.w),
           child: FutureBuilder(
-            future: FirebaseFirestore.instance.collection('notice').doc(noticeAdress).get(),
-            builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
-              if(snapshot.hasError) return Text('');
-              if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-              Map<String, dynamic>? data = snapshot.data?.data() as Map<String, dynamic>?;
-              if(data == null){
+            future: FirebaseFirestore.instance
+                .collection('notice')
+                .doc(noticeAdress)
+                .get(),
+            builder: (BuildContext context,
+                AsyncSnapshot<DocumentSnapshot> snapshot) {
+              if (snapshot.hasError) return Text('');
+              if (snapshot.connectionState == ConnectionState.waiting)
+                return Text('');
+              Map<String, dynamic>? data =
+                  snapshot.data?.data() as Map<String, dynamic>?;
+              if (data == null) {
                 return SizedBox(
                   height: 102.w,
                   child: Center(
-                    child: Text('공지 내용이 삭제되었습니다.',
+                    child: Text(
+                      '공지 내용이 삭제되었습니다.',
                       style: TextStyle(
                         fontSize: 22.w,
                         color: Colors.grey,
@@ -42,16 +49,24 @@ class Notice extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InkWell(
-                        child: Icon(Icons.arrow_back_ios,color: Colors.grey, size: 18.w),
-                        onTap: (){Navigator.pop(context);},
+                        child: Icon(Icons.arrow_back_ios,
+                            color: Colors.grey, size: 18.w),
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
                       ),
-                      SizedBox(width: 24.w,),
+                      SizedBox(
+                        width: 24.w,
+                      ),
                       ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: 260.w),
-                        child: Text('${data['title']}', style: TextStyle(
+                        constraints: BoxConstraints(maxWidth: 260.w),
+                        child: Text(
+                          '${data['title']}',
+                          style: TextStyle(
                             fontSize: 18.w,
                             fontWeight: FontWeight.w700,
-                        ),),
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -60,10 +75,13 @@ class Notice extends StatelessWidget {
                     width: MediaQuery.sizeOf(context).width,
                     alignment: Alignment.centerLeft,
                     padding: EdgeInsets.fromLTRB(4.w, 4.w, 8.w, 0),
-                    child: Text('${data['when']}', style: TextStyle(
-                      fontSize: 14.w,
-                      color: Colors.grey,
-                    ),),
+                    child: Text(
+                      '${data['when']}',
+                      style: TextStyle(
+                        fontSize: 14.w,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
                   SizedBox(height: 15.w),
                   Container(
@@ -72,7 +90,10 @@ class Notice extends StatelessWidget {
                     color: Colors.grey,
                   ),
                   SizedBox(height: 18.w),
-                  Text(detail, style: TextStyle(fontSize: 16.w),),
+                  Text(
+                    detail,
+                    style: TextStyle(fontSize: 16.w),
+                  ),
                 ],
               );
             },

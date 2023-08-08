@@ -43,9 +43,9 @@ class CustomSignInScreen extends MultiProviderScreen {
   }) : super(key: key, providerConfigs: providerConfigs, auth: auth);
 
   Future<void> _signInWithDifferentProvider(
-      BuildContext context,
-      DifferentSignInMethodsFound state,
-      ) async {
+    BuildContext context,
+    DifferentSignInMethodsFound state,
+  ) async {
     await showDifferentMethodSignInDialog(
       availableProviders: state.methods,
       providerConfigs: providerConfigs,

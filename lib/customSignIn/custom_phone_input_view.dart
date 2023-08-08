@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' hide Title;
@@ -12,11 +11,11 @@ import 'custom_phone_input.dart';
 import 'termofservicelist.dart';
 
 typedef SMSCodeRequestedCallback = void Function(
-    BuildContext context,
-    AuthAction? action,
-    Object flowKey,
-    String phoneNumber,
-    );
+  BuildContext context,
+  AuthAction? action,
+  Object flowKey,
+  String phoneNumber,
+);
 
 typedef PhoneNumberSubmitCallback = void Function(String phoneNumber);
 
@@ -49,7 +48,7 @@ class _CustomPhoneInputViewState extends State<CustomPhoneInputView> {
   bool termone = false, termtwo = false;
 
   PhoneNumberSubmitCallback onSubmit(PhoneAuthController ctrl) =>
-          (String phoneNumber) {
+      (String phoneNumber) {
         if (widget.onSubmit != null) {
           widget.onSubmit!(phoneNumber);
         } else {
@@ -108,36 +107,50 @@ class _CustomPhoneInputViewState extends State<CustomPhoneInputView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: EdgeInsets.fromLTRB(20, 10, 60, 10),
+                      padding: EdgeInsets.fromLTRB(20, 10, 60, 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              Text('서비스 이용약관 동의',style: TextStyle(fontSize: 14)),
-                              Text('(필수)',style: TextStyle(fontSize: 10, color: Color(0xFFEF5350))),
+                              Text('서비스 이용약관 동의',
+                                  style: TextStyle(fontSize: 14)),
+                              Text('(필수)',
+                                  style: TextStyle(
+                                      fontSize: 10, color: Color(0xFFEF5350))),
                               IconButton(
-                                  icon: Icon(Icons.keyboard_arrow_right),
-                                  onPressed:(){
-                                    Navigator.push(
-                                      context, MaterialPageRoute(builder: (context) => TermOfService())
-                                    );
-                                  },
+                                icon: Icon(Icons.keyboard_arrow_right),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              TermOfService()));
+                                },
                               )
                             ],
                           ),
-                          termone == true ?
-                            IconButton(
-                            icon: Icon(Icons.check_box,color: Color(0xFF51CF6D)),
-                            onPressed:(){setState((){termone = false;});},
-                            )
-                          : IconButton(
-                            icon: Icon(Icons.check_box_outline_blank,color: Color(0xFF51CF6D)),
-                            onPressed:(){setState((){termone = true;});},
-                          ),
+                          termone == true
+                              ? IconButton(
+                                  icon: Icon(Icons.check_box,
+                                      color: Color(0xFF51CF6D)),
+                                  onPressed: () {
+                                    setState(() {
+                                      termone = false;
+                                    });
+                                  },
+                                )
+                              : IconButton(
+                                  icon: Icon(Icons.check_box_outline_blank,
+                                      color: Color(0xFF51CF6D)),
+                                  onPressed: () {
+                                    setState(() {
+                                      termone = true;
+                                    });
+                                  },
+                                ),
                         ],
-                      )
-                  ),
+                      )),
                   Container(
                       padding: EdgeInsets.fromLTRB(20, 10, 60, 10),
                       child: Row(
@@ -145,59 +158,73 @@ class _CustomPhoneInputViewState extends State<CustomPhoneInputView> {
                         children: [
                           Row(
                             children: [
-                              Text('개인정보 수집 및 이용동의',style: TextStyle(fontSize: 14)),
-                              Text('(필수)',style: TextStyle(fontSize: 10, color: Color(0xFFEF5350))),
+                              Text('개인정보 수집 및 이용동의',
+                                  style: TextStyle(fontSize: 14)),
+                              Text('(필수)',
+                                  style: TextStyle(
+                                      fontSize: 10, color: Color(0xFFEF5350))),
                               IconButton(
                                 icon: Icon(Icons.keyboard_arrow_right),
-                                onPressed:(){
+                                onPressed: () {
                                   Navigator.push(
-                                      context, MaterialPageRoute(builder: (context) => PrivacyPolicy())
-                                  );
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              PrivacyPolicy()));
                                 },
                               )
                             ],
                           ),
-                          termtwo == true ?
-                          IconButton(
-                            icon: Icon(Icons.check_box,color: Color(0xFF51CF6D)),
-                            onPressed:(){setState((){termtwo = false;});},
-                          )
+                          termtwo == true
+                              ? IconButton(
+                                  icon: Icon(Icons.check_box,
+                                      color: Color(0xFF51CF6D)),
+                                  onPressed: () {
+                                    setState(() {
+                                      termtwo = false;
+                                    });
+                                  },
+                                )
                               : IconButton(
-                            icon: Icon(Icons.check_box_outline_blank,color: Color(0xFF51CF6D)),
-                            onPressed:(){setState((){termtwo = true;});},
-                          ),
+                                  icon: Icon(Icons.check_box_outline_blank,
+                                      color: Color(0xFF51CF6D)),
+                                  onPressed: () {
+                                    setState(() {
+                                      termtwo = true;
+                                    });
+                                  },
+                                ),
                         ],
-                      )
-                  ),
+                      )),
                 ],
-              ), 
-              
-              const SizedBox(height: 16),
-              termone == true && termtwo == true ?
-              UniversalButton(
-                text: l.verifyPhoneNumberButtonText,
-                onPressed: () => _next(ctrl),
-              )
-              :UniversalButton(
-                text: l.verifyPhoneNumberButtonText,
-                onPressed: () => showDialog(
-                    barrierDismissible: true,
-                    context: context,
-                    builder: (BuildContext context){
-                      return AlertDialog(
-                        content: Text('필수 이용약관에 동의하지 않았습니다.'),
-                        actions: <Widget>[
-                          TextButton(
-                              child: Text('확인',
-                                  style: TextStyle(color: Color(0xFF51CF6D))
-                              ),
-                              onPressed: (){Navigator.of(context).pop();}
-                          ),
-                        ],
-                      );
-                    }
-                ),
               ),
+
+              const SizedBox(height: 16),
+              termone == true && termtwo == true
+                  ? UniversalButton(
+                      text: l.verifyPhoneNumberButtonText,
+                      onPressed: () => _next(ctrl),
+                    )
+                  : UniversalButton(
+                      text: l.verifyPhoneNumberButtonText,
+                      onPressed: () => showDialog(
+                          barrierDismissible: true,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Text('필수 이용약관에 동의하지 않았습니다.'),
+                              actions: <Widget>[
+                                TextButton(
+                                    child: Text('확인',
+                                        style: TextStyle(
+                                            color: Color(0xFF51CF6D))),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    }),
+                              ],
+                            );
+                          }),
+                    ),
             ],
             if (state is AuthFailed) ...[
               const SizedBox(height: 8),

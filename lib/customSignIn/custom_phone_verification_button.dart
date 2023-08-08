@@ -33,17 +33,18 @@ class CustomPhoneVerificationButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Color(0xFF51CF6D),
-        border: Border.all(color: Color(0xFF51CF6D), width: 1,),
+        border: Border.all(
+          color: Color(0xFF51CF6D),
+          width: 1,
+        ),
         borderRadius: BorderRadius.circular(16.w),
       ),
       padding: EdgeInsets.fromLTRB(8.w, 2.w, 8.w, 2.w),
       child: Center(
         child: TextButton(
           onPressed: () => _onPressed(context),
-          child: Text(
-              label,
-              style: TextStyle(fontSize: 18.w, color: Colors.white)
-          ),
+          child: Text(label,
+              style: TextStyle(fontSize: 18.w, color: Colors.white)),
         ),
       ),
     );

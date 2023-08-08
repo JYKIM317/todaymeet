@@ -9,7 +9,7 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    GMSServices.provideAPIKey("AIzaSyBtaFzFYfxQLwAqnf05OaThZ2Ks1ugCYJg")
+    GMSServices.provideAPIKey("AIzaSyCGoLM2AaiC5sXXLMIA2BTpmL4qgj-80Tw")
     GeneratedPluginRegistrant.register(with: self)
     WorkmanagerPlugin.registerTask(withIdentifier: "task-identifier")
     UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))

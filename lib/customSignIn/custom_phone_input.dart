@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutterfire_ui/i10n.dart';
 import 'package:flutter/material.dart';
@@ -135,8 +134,8 @@ class CustomPhoneInputState extends State<CustomPhoneInput> {
   }) {
     try {
       final newItem = countries.firstWhere(
-            (element) =>
-        element.countryCode == countryCode ||
+        (element) =>
+            element.countryCode == countryCode ||
             element.phoneCode == phoneCode,
       );
 

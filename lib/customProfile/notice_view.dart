@@ -14,10 +14,15 @@ class NoticeView extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        title: Text('공지사항', style: TextStyle(fontSize: 16.w, color: Colors.black),),
+        title: Text(
+          '공지사항',
+          style: TextStyle(fontSize: 16.w, color: Colors.black),
+        ),
         leading: InkWell(
-          child: Icon(Icons.arrow_back_ios,color: Colors.grey, size: 18.w),
-          onTap: (){Navigator.pop(context);},
+          child: Icon(Icons.arrow_back_ios, color: Colors.grey, size: 18.w),
+          onTap: () {
+            Navigator.pop(context);
+          },
         ),
       ),
       body: SingleChildScrollView(
@@ -29,54 +34,61 @@ class NoticeView extends StatelessWidget {
                 SizedBox(height: 16.w),
                 FutureBuilder<QuerySnapshot>(
                   future: FirebaseFirestore.instance.collection('notice').get(),
-                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-                    if(snapshot.hasError) return Text('');
-                    if(snapshot.connectionState == ConnectionState.waiting) return Text('');
-                    final List<DocumentSnapshot> noticeList = snapshot.data!.docs;
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) return Text('');
+                    if (snapshot.connectionState == ConnectionState.waiting)
+                      return Text('');
+                    final List<DocumentSnapshot> noticeList =
+                        snapshot.data!.docs;
                     return ListView.separated(
                       shrinkWrap: true,
                       itemCount: noticeList.length,
-                      itemBuilder: (BuildContext ctx, int idx){
+                      itemBuilder: (BuildContext ctx, int idx) {
                         String noticeTitle = noticeList[idx].get('title');
                         String when = noticeList[idx].get('when');
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(when, style: TextStyle(
-                              fontSize: 14.w,
-                              color: Colors.grey,
-                            )),
+                            Text(when,
+                                style: TextStyle(
+                                  fontSize: 14.w,
+                                  color: Colors.grey,
+                                )),
                             InkWell(
                               child: Container(
                                 width: double.infinity,
-                                child: Text('$noticeTitle',
+                                child: Text(
+                                  '$noticeTitle',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w700,
-                                      fontSize: 20.w
-                                  ),
+                                      fontSize: 20.w),
                                 ),
                                 padding: EdgeInsets.only(bottom: 6.w),
-                                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey))),
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        bottom:
+                                            BorderSide(color: Colors.grey))),
                               ),
-                              onTap: (){
-                                Navigator.push(context,
-                                    MaterialPageRoute(builder:
-                                        (context) => Notice(noticeAdress: noticeList[idx].id))
-                                );
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Notice(
+                                            noticeAdress: noticeList[idx].id)));
                               },
                             ),
                           ],
                         );
                       },
-                      separatorBuilder: (ctx, idx){
+                      separatorBuilder: (ctx, idx) {
                         return SizedBox(height: 16.w);
                       },
                     );
                   },
                 ),
               ],
-            )
-        ),
+            )),
       ),
     );
   }
