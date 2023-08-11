@@ -215,13 +215,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   await ScreenUtil.ensureScreenSize();
 
   await Workmanager().initialize(callbackDispatcher);
-  await Workmanager().registerPeriodicTask('checkGroup', fetchBackground,
-      frequency: Duration(minutes: 15),
-      constraints: Constraints(networkType: NetworkType.connected));
-
+  if (Platform.isAndroid) {
+    await Workmanager().registerPeriodicTask('checkGroup', fetchBackground,
+        frequency: Duration(minutes: 15),
+        constraints: Constraints(networkType: NetworkType.connected));
+  }
   var initialzationSettingsIOS = DarwinInitializationSettings(
     requestSoundPermission: true,
     requestBadgePermission: true,
@@ -391,6 +393,34 @@ class _MyAppState extends State<MyApp> {
       onWillPop: () async {
         const value = true;
         if (_interstitialAd != null) _interstitialAd?.show();
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6.w)),
+                  content: Text(""),
+                  actions: [
+                    TextButton(
+                        child: Text('취소',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12.w,
+                            )),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        }),
+                    TextButton(
+                        child: Text('종료',
+                            style: TextStyle(
+                              color: Color(0xFF51CF6D),
+                              fontSize: 12.w,
+                            )),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
+                  ]);
+            });
         return value;
       },
       child: Scaffold(
@@ -1508,10 +1538,13 @@ class LoginPage extends StatelessWidget {
                 ],
                 headerBuilder: (context, constraints, shirinkOffset) {
                   return Center(
-                      child: Icon(
-                    Icons.waving_hand,
-                    size: 150.w,
-                    color: Color(0xFF51CF6D),
+                      child: Text(
+                    '오늘\n모임.',
+                    style: TextStyle(
+                      color: Color(0xFF51CF6D),
+                      fontSize: 72.w,
+                      fontFamily: 'room703',
+                    ),
                   ));
                 },
                 showAuthActionSwitch: false,

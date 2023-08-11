@@ -107,7 +107,7 @@ class _CustomPhoneInputViewState extends State<CustomPhoneInputView> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                      padding: EdgeInsets.fromLTRB(20, 10, 60, 10),
+                      padding: EdgeInsets.fromLTRB(20, 10, 30, 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -152,7 +152,7 @@ class _CustomPhoneInputViewState extends State<CustomPhoneInputView> {
                         ],
                       )),
                   Container(
-                      padding: EdgeInsets.fromLTRB(20, 10, 60, 10),
+                      padding: EdgeInsets.fromLTRB(20, 10, 30, 10),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
