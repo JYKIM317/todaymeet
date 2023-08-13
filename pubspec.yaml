@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   firebase_core: ^2.7.0
-  firebase_auth: ^4.2.9
+  firebase_auth: ^4.7.2
   flutter_riverpod: ^2.3.0
   flutterfire_ui: ^0.4.3+20
   image_picker: ^0.8.7

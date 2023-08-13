@@ -2,6 +2,7 @@ import UIKit
 import Flutter
 import workmanager
 import GoogleMaps
+import Firebase
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -9,9 +10,13 @@ import GoogleMaps
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    FirebaseApp.configure()
     GMSServices.provideAPIKey("AIzaSyCGoLM2AaiC5sXXLMIA2BTpmL4qgj-80Tw")
     GeneratedPluginRegistrant.register(with: self)
     WorkmanagerPlugin.registerTask(withIdentifier: "task-identifier")
+    if #available(iOS 10.0, *) {
+      UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
+    }
     UIApplication.shared.setMinimumBackgroundFetchInterval(TimeInterval(60*15))
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
