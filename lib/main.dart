@@ -1159,9 +1159,7 @@ class _HomePageState extends State<HomePage> {
                                                                         '${data['memberPhotoUrl'][0]}'),
                                                               ),
                                                             ),
-                                                          if (headcount
-                                                                  .length >=
-                                                              3)
+                                                          if (headcount.length >= 3)
                                                             Transform.translate(
                                                               offset: Offset(
                                                                   35.w, 35.w),
