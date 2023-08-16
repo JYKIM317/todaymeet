@@ -128,8 +128,8 @@ class CustomPhoneInputState extends State<CustomPhoneInput> {
   }
 
   void _setCountry({
-    String? phoneCode,
-    String? countryCode,
+    String? phoneCode = '82',
+    String? countryCode = 'KR',
     bool updateCountryInput = true,
   }) {
     try {

@@ -6,7 +6,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -215,7 +214,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  /*auth.FirebaseUIAuth.configureProviders([
+    auth.PhoneAuthProvider(),
+  ]);*/
   await ScreenUtil.ensureScreenSize();
 
   await Workmanager().initialize(callbackDispatcher);
@@ -273,8 +274,7 @@ void main() async {
     var pushtoken = await FirebaseMessaging.instance.getToken();
     _userinfo.update({'pushToken': pushtoken});
   }
-  runApp(ProviderScope(
-      child: MaterialApp(
+  runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: LoginPage(),
     theme: ThemeData(
@@ -300,9 +300,10 @@ void main() async {
                   MaterialStateProperty.all<Color>(Color(0xFF51CF6D)))),
     ),
     localizationsDelegates: [
+      //FirebaseUILocalizations.withDefaultOverrides(const LabelOverrides())
       FlutterFireUILocalizations.withDefaultOverrides(const LabelOverrides())
     ],
-  )));
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -424,7 +425,7 @@ class _MyAppState extends State<MyApp> {
         return value;
       },
       child: Scaffold(
-          resizeToAvoidBottomInset: true,
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -1508,52 +1509,23 @@ class LoginPage extends StatelessWidget {
         initialData: _user,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              theme: ThemeData(
-                textButtonTheme: TextButtonThemeData(
-                    style: ButtonStyle(
-                        foregroundColor:
-                            MaterialStateProperty.all<Color>(Color(0xFF51CF6D)),
-                        overlayColor: MaterialStateProperty.all<Color>(
-                            Colors.transparent))),
-                inputDecorationTheme: InputDecorationTheme(
-                  labelStyle: TextStyle(color: Color(0xFF51CF6D)),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(color: Color(0xFF51CF6D)),
-                  ),
-                ),
-                elevatedButtonTheme: ElevatedButtonThemeData(
-                    style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            Color(0xFF51CF6D)))),
-                fontFamily: 'Pretendard',
-                highlightColor: Colors.transparent,
-                splashColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-              ),
-              home: CustomSignInScreen(
-                providerConfigs: [
-                  PhoneProviderConfiguration(),
-                ],
-                headerBuilder: (context, constraints, shirinkOffset) {
-                  return Center(
-                      child: Text(
-                    '오늘\n모임.',
-                    style: TextStyle(
-                      color: Color(0xFF51CF6D),
-                      fontSize: 72.w,
-                      fontFamily: 'room703',
-                    ),
-                  ));
-                },
-                showAuthActionSwitch: false,
-                headerMaxExtent: 500.h,
-              ),
-              localizationsDelegates: [
-                FlutterFireUILocalizations.withDefaultOverrides(
-                    const LabelOverrides()),
+            return CustomSignInScreen(
+              providerConfigs: [
+                PhoneProviderConfiguration(),
               ],
+              headerBuilder: (context, constraints, shirinkOffset) {
+                return Center(
+                    child: Text(
+                  '오늘\n모임.',
+                  style: TextStyle(
+                    color: Color(0xFF51CF6D),
+                    fontSize: 72.w,
+                    fontFamily: 'room703',
+                  ),
+                ));
+              },
+              showAuthActionSwitch: false,
+              headerMaxExtent: 500.h,
             );
           }
           _user = FirebaseAuth.instance.currentUser;

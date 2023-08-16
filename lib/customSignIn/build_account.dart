@@ -509,25 +509,20 @@ class _genderbuildState extends State<_genderbuild> {
   }
 }
 
-class AccountBuild extends StatefulWidget {
-  const AccountBuild({Key? key}) : super(key: key);
+class _birthdaybuild extends StatefulWidget {
+  const _birthdaybuild({super.key});
+
   @override
-  State<AccountBuild> createState() => _AccountBuildState();
+  State<_birthdaybuild> createState() => __birthdaybuildState();
 }
 
-class _AccountBuildState extends State<AccountBuild> {
-  TextEditingController nameController = TextEditingController();
+class __birthdaybuildState extends State<_birthdaybuild> {
   TextEditingController yearController = TextEditingController();
   TextEditingController monthController = TextEditingController();
   TextEditingController dayController = TextEditingController();
 
   @override
-  void initState() {
-    _user = FirebaseAuth.instance.currentUser;
-    super.initState();
-  }
-
-  Widget _birthdaybuild() {
+  Widget build(BuildContext context) {
     int _thisyear = int.parse(DateTime.now().year.toString());
     yearController.text = yearParameter?.toString() ?? '';
     monthController.text = monthParameter?.toString() ?? '';
@@ -730,6 +725,23 @@ class _AccountBuildState extends State<AccountBuild> {
         ),
       ),
     );
+  }
+}
+
+class AccountBuild extends StatefulWidget {
+  const AccountBuild({Key? key}) : super(key: key);
+  @override
+  State<AccountBuild> createState() => _AccountBuildState();
+}
+
+class _AccountBuildState extends State<AccountBuild> {
+  TextEditingController nameController = TextEditingController();
+  static final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    _user = FirebaseAuth.instance.currentUser;
+    super.initState();
   }
 
   @override

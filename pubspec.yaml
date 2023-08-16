@@ -30,22 +30,21 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: ^2.7.0
+  firebase_core: ^2.15.0
   firebase_auth: ^4.7.2
-  flutter_riverpod: ^2.3.0
   flutterfire_ui: ^0.4.3+20
-  image_picker: ^0.8.7
-  firebase_storage: ^11.0.16
-  cloud_firestore: ^4.4.5
-  google_maps_flutter: ^2.2.5
+  image_picker: ^1.0.2
+  firebase_storage: ^11.2.5
+  cloud_firestore: ^4.8.4
+  google_maps_flutter: ^2.4.0
   bottom_drawer: ^0.0.5
   flutter_screenutil: ^5.7.0
   geolocator: ^9.0.2
-  http: ^0.13.5
+  http: ^1.1.0
   dotted_border: ^2.0.0+3
-  firebase_messaging: ^14.6.1
-  flutter_local_notifications: ^14.1.0
-  flutter_email_sender: ^5.2.0
+  firebase_messaging: ^14.6.5
+  flutter_local_notifications: ^15.1.0+1
+  flutter_email_sender: ^6.0.1
   flutter_progress_hud: ^2.0.2
   workmanager: ^0.5.1
   google_mobile_ads: ^3.0.0

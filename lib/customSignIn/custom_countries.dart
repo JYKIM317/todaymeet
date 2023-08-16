@@ -1,8 +1,8 @@
 part of 'custom_phone_input.dart';
 
 final countries = [
-  {'name': 'South Korea', 'phoneCode': '82', 'countryCode': 'KR'},
-  {'name': 'United States', 'phoneCode': '1', 'countryCode': 'US'},
+  {'name': '대한민국', 'phoneCode': '82', 'countryCode': 'KR'},
+  //{'name': 'United States', 'phoneCode': '1', 'countryCode': 'US'},
   /*
   {'name': 'Afghanistan', 'phoneCode': '93', 'countryCode': 'AF'},
   {'name': 'Albania', 'phoneCode': '355', 'countryCode': 'AL'},
