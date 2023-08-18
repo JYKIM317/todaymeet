@@ -92,6 +92,7 @@ class _ChattingState extends State<Chatting> {
   @override
   Widget build(BuildContext context) {
     final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+    int chatCount = 0;
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -396,7 +397,6 @@ class _ChattingState extends State<Chatting> {
                         if (snapshot.connectionState == ConnectionState.waiting)
                           return Text('');
                         List<DocumentSnapshot>? chatList = snapshot.data!.docs;
-                        print('callback streambuilder');
                         members = chatList.first.get('member');
                         memberToken = chatList.first.get('memberTokenList');
                         isGroup = chatList.first.get('isGroup');
@@ -419,18 +419,7 @@ class _ChattingState extends State<Chatting> {
                           );
                         }
                         chatList.removeAt(0);
-                        if (isGroup) {
-                          int chatCount = chatList.length;
-                          if (chatCount % 20 == 0) {
-                            chatRoom
-                                .doc('message_${DateTime.now()}_system')
-                                .set({
-                              'sendTime': DateTime.now(),
-                              'text': '그룹 대화방은 모임 시작 후 24시간 뒤 해체됩니다.',
-                              'uid': 'system'
-                            });
-                          }
-                        }
+                        chatCount = chatList.length;
                         return chatList.isNotEmpty
                             ? ListView.separated(
                                 shrinkWrap: true,
@@ -668,6 +657,15 @@ class _ChattingState extends State<Chatting> {
                       'newestTime': sendTime,
                       'newestMessage': textData.replaceAll('\n', ' '),
                     });
+                    if (isGroup) {
+                      if (chatCount % 25 == 0 || chatCount == 1) {
+                        chatRoom.doc('message_${DateTime.now()}_system').set({
+                          'sendTime': DateTime.now(),
+                          'text': '그룹 대화방은 모임 시작 후 24시간 뒤 해체됩니다.',
+                          'uid': 'system'
+                        });
+                      }
+                    }
                     if (!isGroup) {
                       if (userindex != 0) {
                         FirebaseFirestore.instance
