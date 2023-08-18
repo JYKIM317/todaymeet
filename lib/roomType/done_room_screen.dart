@@ -46,14 +46,14 @@ class _DoneRoomPageState extends State<DoneRoomPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(
-                          child: InkWell(
+                        InkWell(
+                          child: SizedBox(
                             child: Icon(Icons.arrow_back_ios,
                                 color: Colors.grey, size: 18.w),
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
                           ),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
                         ),
                         SizedBox(height: 24.w),
                         FutureBuilder<DocumentSnapshot>(

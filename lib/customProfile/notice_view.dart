@@ -19,7 +19,9 @@ class NoticeView extends StatelessWidget {
           style: TextStyle(fontSize: 16.w, color: Colors.black),
         ),
         leading: InkWell(
-          child: Icon(Icons.arrow_back_ios, color: Colors.grey, size: 18.w),
+          child: SizedBox(
+              child:
+                  Icon(Icons.arrow_back_ios, color: Colors.grey, size: 18.w)),
           onTap: () {
             Navigator.pop(context);
           },

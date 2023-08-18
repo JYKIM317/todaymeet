@@ -154,14 +154,14 @@ class _OtherProfileState extends State<OtherProfile> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 24.w),
-              SizedBox(
-                child: InkWell(
+              InkWell(
+                child: SizedBox(
                   child: Icon(Icons.arrow_back_ios,
                       color: Colors.grey, size: 18.w),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
                 ),
+                onTap: () {
+                  Navigator.pop(context);
+                },
               ),
               SizedBox(height: 24.w),
               FutureBuilder<DocumentSnapshot>(
@@ -194,7 +194,7 @@ class _OtherProfileState extends State<OtherProfile> {
                         data['hobbycategory'] as List<dynamic>?;
                     String categoryTextR = regionCategory?.join('  ') ?? '';
                     String categoryTextH = hobbyCategory?.join('  ') ?? '';
-                    int attendCount = data['attend'];
+                    var attendCount = data['attend'];
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -827,7 +827,7 @@ class _OtherProfileState extends State<OtherProfile> {
                                       ConnectionState.waiting) return Text('');
                                   List<DocumentSnapshot>? data =
                                       snapshot.data!.docs.reversed.toList();
-                                  int fieldCount = data.length;
+                                  var fieldCount = data.length;
                                   return Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,

@@ -54,14 +54,14 @@ class _SettingState extends State<Setting> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(height: 24.w),
-                SizedBox(
-                  child: InkWell(
+                InkWell(
+                  child: SizedBox(
                     child: Icon(Icons.arrow_back_ios,
                         color: Colors.grey, size: 18.w),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
                   ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
                 ),
                 SizedBox(height: 32.w),
                 Container(

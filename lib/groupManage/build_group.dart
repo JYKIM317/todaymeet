@@ -1423,6 +1423,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                           ? selectedHour
                                           : selectedHour! + 12)! <
                                   DateTime.now().hour + 1) {
+                                progress?.dismiss();
                                 return limitCreateHour();
                               } else if ((selectedNoon == '오전'
                                       ? selectedHour == 12
@@ -1433,6 +1434,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                           : selectedHour! + 12)! ==
                                   DateTime.now().hour + 1) {
                                 if (selectedMinute! < DateTime.now().minute) {
+                                  progress?.dismiss();
                                   return limitCreateHour();
                                 } else {
                                   await _roomAdress.set({
@@ -1518,6 +1520,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                     'read': 0,
                                     'recent': DateTime(2099, 1, 1, 1, 1),
                                   });
+                                  progress?.dismiss();
                                   Navigator.pop(context);
                                 }
                               } else {
@@ -1604,12 +1607,14 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                   'read': 0,
                                   'recent': DateTime(2099, 1, 1, 1, 1),
                                 });
+                                progress?.dismiss();
                                 Navigator.pop(context);
                               }
                             } else if (tomorrow == true &&
                                 DateTime.now().hour >= 23) {
                               if (selectedNoon == '오전' && selectedHour == 12) {
                                 if (selectedMinute! < DateTime.now().minute) {
+                                  progress?.dismiss();
                                   return limitCreateHour();
                                 } else {
                                   await _roomAdress.set({
@@ -1695,6 +1700,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                     'read': 0,
                                     'recent': DateTime(2099, 1, 1, 1, 1),
                                   });
+                                  progress?.dismiss();
                                   Navigator.pop(context);
                                 }
                               } else {
@@ -1781,6 +1787,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                   'read': 0,
                                   'recent': DateTime(2099, 1, 1, 1, 1),
                                 });
+                                progress?.dismiss();
                                 Navigator.pop(context);
                               }
                             } else {
@@ -1867,10 +1874,11 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                 'read': 0,
                                 'recent': DateTime(2099, 1, 1, 1, 1),
                               });
+                              progress?.dismiss();
                               Navigator.pop(context);
                             }
-                            progress?.dismiss();
                           } else {
+                            progress?.dismiss();
                             showDialog(
                                 barrierDismissible: true,
                                 context: context,

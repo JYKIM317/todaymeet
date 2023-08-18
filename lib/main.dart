@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -274,35 +275,37 @@ void main() async {
     var pushtoken = await FirebaseMessaging.instance.getToken();
     _userinfo.update({'pushToken': pushtoken});
   }
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: LoginPage(),
-    theme: ThemeData(
-      fontFamily: 'Pretendard',
-      splashColor: Colors.transparent,
-      hoverColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(
-              foregroundColor:
-                  MaterialStateProperty.all<Color>(Color(0xFF51CF6D)),
-              overlayColor:
-                  MaterialStateProperty.all<Color>(Colors.transparent))),
-      inputDecorationTheme: InputDecorationTheme(
-        labelStyle: TextStyle(color: Color(0xFF51CF6D)),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Color(0xFF51CF6D)),
+  runApp(ProviderScope(
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: LoginPage(),
+      theme: ThemeData(
+        fontFamily: 'Pretendard',
+        splashColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        textButtonTheme: TextButtonThemeData(
+            style: ButtonStyle(
+                foregroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFF51CF6D)),
+                overlayColor:
+                    MaterialStateProperty.all<Color>(Colors.transparent))),
+        inputDecorationTheme: InputDecorationTheme(
+          labelStyle: TextStyle(color: Color(0xFF51CF6D)),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Color(0xFF51CF6D)),
+          ),
         ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Color(0xFF51CF6D)))),
       ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(Color(0xFF51CF6D)))),
+      localizationsDelegates: [
+        //FirebaseUILocalizations.withDefaultOverrides(const LabelOverrides())
+        FlutterFireUILocalizations.withDefaultOverrides(const LabelOverrides())
+      ],
     ),
-    localizationsDelegates: [
-      //FirebaseUILocalizations.withDefaultOverrides(const LabelOverrides())
-      FlutterFireUILocalizations.withDefaultOverrides(const LabelOverrides())
-    ],
   ));
 }
 
@@ -400,7 +403,7 @@ class _MyAppState extends State<MyApp> {
               return AlertDialog(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(6.w)),
-                  content: Text(""),
+                  content: Text("정말 앱을 종료하시겠습니까?"),
                   actions: [
                     TextButton(
                         child: Text('취소',
@@ -418,7 +421,8 @@ class _MyAppState extends State<MyApp> {
                               fontSize: 12.w,
                             )),
                         onPressed: () {
-                          Navigator.pop(context);
+                          if (Platform.isAndroid) SystemNavigator.pop();
+                          if (Platform.isIOS) exit(0);
                         }),
                   ]);
             });
@@ -429,6 +433,7 @@ class _MyAppState extends State<MyApp> {
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
+            centerTitle: false,
             title: Padding(
               padding: EdgeInsets.only(left: 12.w),
               child: Text(
@@ -463,35 +468,35 @@ class _MyAppState extends State<MyApp> {
                         notificationList.last.get('timeStamp').toDate();
                     return Padding(
                       padding: EdgeInsets.only(right: 16.w),
-                      child: Stack(
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              Icons.notifications_none,
-                              color: Color(0xFF51CF6D),
-                              size: 22.w,
-                            ),
-                            onPressed: () async {
-                              Scaffold.of(context).openEndDrawer();
-                              await _userinfo
-                                  .collection('notification')
-                                  .doc('1nfo')
-                                  .update({
-                                'recent': DateTime.now(),
-                              });
-                            },
-                            hoverColor: Colors.transparent,
-                            splashColor: Colors.transparent,
-                            highlightColor: Colors.transparent,
+                      child: InkWell(
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Stack(
+                            children: [
+                              Icon(
+                                Icons.notifications_none,
+                                color: Color(0xFF51CF6D),
+                                size: 22.w,
+                              ),
+                              if (recentRead.isBefore(lastNotification))
+                                Transform.translate(
+                                    offset: Offset(0, 0),
+                                    child: CircleAvatar(
+                                      backgroundColor: Color(0xFFFFA000),
+                                      radius: 4.w,
+                                    ))
+                            ],
                           ),
-                          if (recentRead.isBefore(lastNotification))
-                            Transform.translate(
-                                offset: Offset(22.w, 20.w),
-                                child: CircleAvatar(
-                                  backgroundColor: Color(0xFFFFA000),
-                                  radius: 4.w,
-                                ))
-                        ],
+                        ),
+                        onTap: () async {
+                          Scaffold.of(context).openEndDrawer();
+                          _userinfo
+                              .collection('notification')
+                              .doc('1nfo')
+                              .update({
+                            'recent': DateTime.now(),
+                          });
+                        },
                       ),
                     );
                   })
@@ -1159,7 +1164,9 @@ class _HomePageState extends State<HomePage> {
                                                                         '${data['memberPhotoUrl'][0]}'),
                                                               ),
                                                             ),
-                                                          if (headcount.length >= 3)
+                                                          if (headcount
+                                                                  .length >=
+                                                              3)
                                                             Transform.translate(
                                                               offset: Offset(
                                                                   35.w, 35.w),

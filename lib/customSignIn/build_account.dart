@@ -68,22 +68,24 @@ class _photobuildState extends State<_photobuild> {
               Container(
                 alignment: Alignment.centerLeft,
                 child: InkWell(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.grey,
-                        size: 18.w,
-                      ),
-                      Text(
-                        '뒤로가기',
-                        style: TextStyle(
+                  child: SizedBox(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.arrow_back_ios,
                           color: Colors.grey,
-                          fontSize: 12.w,
+                          size: 18.w,
                         ),
-                      )
-                    ],
+                        Text(
+                          '뒤로가기',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12.w,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -194,36 +196,33 @@ class _photobuildState extends State<_photobuild> {
                           barrierDismissible: false,
                           context: context,
                           builder: (BuildContext context) {
-                            return Center(
-                              child: AlertDialog(
-                                alignment: Alignment.center,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6.w)),
-                                content: Center(
-                                    child: Text(
-                                        "회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n\n\n\n")),
-                                actions: [
-                                  Center(
-                                    child: TextButton(
-                                        child: Text('알겠습니다!',
-                                            style: TextStyle(
-                                              color: Color(0xFF51CF6D),
-                                              fontSize: 18,
-                                            )),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                          Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        main.LoginPage()),
-                                            (route) => false,
-                                          );
-                                        }),
-                                  )
-                                ],
-                              ),
+                            return AlertDialog(
+                              alignment: Alignment.center,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6.w)),
+                              content: Center(
+                                  child: Text(
+                                      "회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n\n\n\n")),
+                              actions: [
+                                Center(
+                                  child: TextButton(
+                                      child: Text('알겠습니다!',
+                                          style: TextStyle(
+                                            color: Color(0xFF51CF6D),
+                                            fontSize: 18,
+                                          )),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                        Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  main.LoginPage()),
+                                          (route) => false,
+                                        );
+                                      }),
+                                )
+                              ],
                             );
                           });
                     });
@@ -363,22 +362,24 @@ class _genderbuildState extends State<_genderbuild> {
               Container(
                 alignment: Alignment.centerLeft,
                 child: InkWell(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.grey,
-                        size: 18.w,
-                      ),
-                      Text(
-                        '뒤로가기',
-                        style: TextStyle(
+                  child: SizedBox(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.arrow_back_ios,
                           color: Colors.grey,
-                          fontSize: 12.w,
+                          size: 18.w,
                         ),
-                      )
-                    ],
+                        Text(
+                          '뒤로가기',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12.w,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -537,22 +538,24 @@ class __birthdaybuildState extends State<_birthdaybuild> {
               Container(
                 alignment: Alignment.centerLeft,
                 child: InkWell(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.grey,
-                        size: 18.w,
-                      ),
-                      Text(
-                        '뒤로가기',
-                        style: TextStyle(
+                  child: SizedBox(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.arrow_back_ios,
                           color: Colors.grey,
-                          fontSize: 12.w,
+                          size: 18.w,
                         ),
-                      )
-                    ],
+                        Text(
+                          '뒤로가기',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12.w,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -586,6 +589,7 @@ class __birthdaybuildState extends State<_birthdaybuild> {
                   Expanded(
                     flex: 2,
                     child: TextField(
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: '년도',
                       ),
@@ -596,6 +600,7 @@ class __birthdaybuildState extends State<_birthdaybuild> {
                   Expanded(
                     flex: 1,
                     child: TextField(
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: '월',
                       ),
@@ -606,6 +611,7 @@ class __birthdaybuildState extends State<_birthdaybuild> {
                   Expanded(
                     flex: 1,
                     child: TextField(
+                      keyboardType: TextInputType.number,
                       decoration: InputDecoration(
                         labelText: '일',
                       ),
@@ -632,7 +638,9 @@ class __birthdaybuildState extends State<_birthdaybuild> {
                   ),
                 ),
                 onTap: () {
+                  print('year type is ${yearController.text.runtimeType}');
                   yearParameter = int.parse(yearController.text);
+                  print('exchange year type is ${yearParameter.runtimeType}');
                   monthParameter = int.parse(monthController.text);
                   dayParameter = int.parse(dayController.text);
                   if (yearParameter.toString().length == 4 &&
