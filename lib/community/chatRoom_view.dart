@@ -149,6 +149,7 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                             ? ListView.separated(
                                 shrinkWrap: true,
                                 itemCount: chatList.length,
+                                physics: BouncingScrollPhysics(),
                                 itemBuilder: (BuildContext ctx, int idx) {
                                   int read = chatList[idx].get('read');
                                   return StreamBuilder(
@@ -493,6 +494,7 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                         return favoritemembers.isNotEmpty
                             ? ListView.separated(
                                 shrinkWrap: true,
+                                physics: BouncingScrollPhysics(),
                                 itemCount: favoritemembers.length,
                                 itemBuilder: (BuildContext ctx, int idx) {
                                   return FutureBuilder<DocumentSnapshot>(

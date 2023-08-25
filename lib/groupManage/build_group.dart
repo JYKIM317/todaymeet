@@ -295,12 +295,6 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
     selectedPlace = null;
     titleController = TextEditingController();
     infoController = TextEditingController();
-    shown = true;
-    interstitialAd();
-  }
-
-  @override
-  void dispose() {
     foodState = false;
     alcoholState = false;
     cafeState = false;
@@ -318,6 +312,12 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
     gameState = false;
     boardgameState = false;
     etcState = false;
+    shown = true;
+    interstitialAd();
+  }
+
+  @override
+  void dispose() {
     _interstitialAd?.dispose();
     super.dispose();
   }

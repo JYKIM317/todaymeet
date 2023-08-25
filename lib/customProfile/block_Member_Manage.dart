@@ -85,6 +85,7 @@ class _BlockManageState extends State<BlockManage> {
                     return blockmembers.isNotEmpty
                         ? ListView.separated(
                             shrinkWrap: true,
+                            physics: BouncingScrollPhysics(),
                             itemCount: blockmembers.length,
                             itemBuilder: (BuildContext ctx, int idx) {
                               return FutureBuilder<DocumentSnapshot>(

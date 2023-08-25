@@ -12,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutterfire_ui/auth.dart';
 import 'package:flutterfire_ui/i10n.dart';
+import 'package:store_redirect/store_redirect.dart';
 import 'signinLabel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'customProfile/custom_Profile.dart';
@@ -38,6 +39,7 @@ late AndroidNotificationChannel channel;
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 const fetchBackground = 'fetchBackground';
+const iOSPerformFetch = 'iOSPerformFetch';
 const fcmServerKey =
     'AAAA8cL90wc:APA91bF-RBJ3dRn0d_1uSIoJE1BNIzaA8weml0I-3xVH44Zshxqgo7342rmr5TT1JDE-aNNej6DekBinmbSTQ2llvBCBxE4EqHTSQ1x-UwxphCorQWAUcrb_c3jaNiQfEu04IhgETBQf';
 
@@ -79,10 +81,20 @@ Future<void> sendMessage({
   }
 }
 
-void callbackDispatcher() {
+@pragma('vm:entry-point')
+void callbackDispatcher() async {
   WidgetsFlutterBinding.ensureInitialized();
   Workmanager().executeTask((task, inputData) async {
-    await Firebase.initializeApp();
+    await sendMessage(
+      userToken:
+          'euZTqcyOokXJlHl00dE2jb:APA91bGDN7PHYsICevYXO8bCDrN6B07YB05baMH4BsH0GU-8o5_pU1twl4bk9I5fY3HxAvlykBnVzHBe5lAqBBSWrUWlUw05T-CzsdBqnJk9khaABVAmkVMi1IiLpIOGU5Ng_uqczaD7',
+      title: 'task name is',
+      body: '$task',
+    );
+    await Firebase.initializeApp().catchError((er) {
+      print('firebase initializeapp method occured error : $er');
+      return Future.error(er);
+    });
     switch (task) {
       case fetchBackground:
         User? currentUser = FirebaseAuth.instance.currentUser;
@@ -157,7 +169,7 @@ void callbackDispatcher() {
                 );
               }
               if (DateTime.now().difference(targetTime).inMinutes >= 0 &&
-                  DateTime.now().difference(targetTime).inMinutes <= 15) {
+                  DateTime.now().difference(targetTime).inMinutes <= 25) {
                 await sendMessage(
                   userToken: userFcmToken,
                   title: '오늘모임',
@@ -191,7 +203,133 @@ void callbackDispatcher() {
                 body: '곧 모임이 시작됩니다! \n지금은 모임을 탈퇴할 수 없어요',
               );
             }
-            if (DateTime.now().difference(targetTime).inMinutes >= 10 &&
+            if (DateTime.now().difference(targetTime).inMinutes >= 0 &&
+                DateTime.now().difference(targetTime).inMinutes <= 25 &&
+                madedata['inProgress'] == true) {
+              await sendMessage(
+                userToken: userFcmToken,
+                title: '오늘모임',
+                body: '모임이 시작되었습니다! \n꼭 상대의 출석체크를 진행해주세요',
+              );
+            }
+          }
+        }
+        break;
+
+      case iOSPerformFetch:
+        await sendMessage(
+          userToken:
+              'euZTqcyOokXJlHl00dE2jb:APA91bGDN7PHYsICevYXO8bCDrN6B07YB05baMH4BsH0GU-8o5_pU1twl4bk9I5fY3HxAvlykBnVzHBe5lAqBBSWrUWlUw05T-CzsdBqnJk9khaABVAmkVMi1IiLpIOGU5Ng_uqczaD7',
+          title: 'workmanager debug test',
+          body: 'this message send after case taskname "iOSPerformFetch"',
+        );
+        User? currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null) {
+          var userFcmToken;
+          final joinCheck = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .collection('room')
+              .doc('join')
+              .get();
+          Map<String, dynamic>? joindata =
+              joinCheck.data() as Map<String, dynamic>?;
+          final madeCheck = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser.uid)
+              .collection('room')
+              .doc('made')
+              .get();
+          Map<String, dynamic>? madedata =
+              madeCheck.data() as Map<String, dynamic>?;
+
+          if (joindata != null || madedata != null) {
+            final currentUserData = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(currentUser.uid)
+                .get();
+            Map<String, dynamic>? userToken =
+                currentUserData.data() as Map<String, dynamic>?;
+            userFcmToken = userToken!['pushToken'];
+            if (userFcmToken == null) {
+              userFcmToken = await FirebaseMessaging.instance.getToken();
+            }
+          }
+
+          if (joindata != null) {
+            final joinRoom = await FirebaseFirestore.instance
+                .collection('activateRoom')
+                .doc(joindata['hostUID'])
+                .get();
+            Map<String, dynamic>? joinRoomdata =
+                joinRoom.data() as Map<String, dynamic>?;
+            if (joinRoomdata == null) {
+              final joinRoomI = await FirebaseFirestore.instance
+                  .collection('inProgressRoom')
+                  .doc(joindata['hostUID'])
+                  .get();
+              joinRoomdata = joinRoomI.data() as Map<String, dynamic>?;
+            }
+            if (joinRoomdata != null) {
+              final targetTime = DateTime(
+                joinRoomdata['targetYear'],
+                joinRoomdata['targetMonth'],
+                joinRoomdata['targetDay'],
+                joinRoomdata['targetHour'],
+                joinRoomdata['targetMinute'],
+              );
+              if (targetTime.difference(DateTime.now()).inMinutes >= 40 &&
+                  targetTime.difference(DateTime.now()).inMinutes <= 55) {
+                await sendMessage(
+                  userToken: userFcmToken,
+                  title: '오늘모임',
+                  body: '모임 시작 30분 전부터는 모임 탈퇴가 불가능합니다 \n지금 참가한 모임을 확인해보세요!',
+                );
+              }
+              if (targetTime.difference(DateTime.now()).inMinutes >= 15 &&
+                  targetTime.difference(DateTime.now()).inMinutes <= 30) {
+                await sendMessage(
+                  userToken: userFcmToken,
+                  title: '오늘모임',
+                  body: '곧 모임이 시작됩니다! \n지금은 모임을 탈퇴할 수 없어요',
+                );
+              }
+              if (DateTime.now().difference(targetTime).inMinutes >= 0 &&
+                  DateTime.now().difference(targetTime).inMinutes <= 25) {
+                await sendMessage(
+                  userToken: userFcmToken,
+                  title: '오늘모임',
+                  body: '모임이 시작되었습니다! \n꼭 상대의 출석체크를 진행해주세요',
+                );
+              }
+            }
+          }
+
+          if (madedata != null) {
+            final targetTime = DateTime(
+              madedata['targetYear'],
+              madedata['targetMonth'],
+              madedata['targetDay'],
+              madedata['targetHour'],
+              madedata['targetMinute'],
+            );
+            if (targetTime.difference(DateTime.now()).inMinutes >= 40 &&
+                targetTime.difference(DateTime.now()).inMinutes <= 55) {
+              await sendMessage(
+                userToken: userFcmToken,
+                title: '오늘모임',
+                body: '모임 시작 30분 전부터는 모임 탈퇴가 불가능합니다 \n지금 참가한 모임을 확인해보세요!',
+              );
+            }
+            if (targetTime.difference(DateTime.now()).inMinutes >= 15 &&
+                targetTime.difference(DateTime.now()).inMinutes <= 30) {
+              await sendMessage(
+                userToken: userFcmToken,
+                title: '오늘모임',
+                body: '곧 모임이 시작됩니다! \n지금은 모임을 탈퇴할 수 없어요',
+              );
+            }
+            if (DateTime.now().difference(targetTime).inMinutes >= 0 &&
                 DateTime.now().difference(targetTime).inMinutes <= 25 &&
                 madedata['inProgress'] == true) {
               await sendMessage(
@@ -215,12 +353,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  /*auth.FirebaseUIAuth.configureProviders([
-    auth.PhoneAuthProvider(),
-  ]);*/
   await ScreenUtil.ensureScreenSize();
 
-  await Workmanager().initialize(callbackDispatcher);
+  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
   if (Platform.isAndroid) {
     await Workmanager().registerPeriodicTask('checkGroup', fetchBackground,
         frequency: Duration(minutes: 15),
@@ -302,7 +437,6 @@ void main() async {
                     MaterialStateProperty.all<Color>(Color(0xFF51CF6D)))),
       ),
       localizationsDelegates: [
-        //FirebaseUILocalizations.withDefaultOverrides(const LabelOverrides())
         FlutterFireUILocalizations.withDefaultOverrides(const LabelOverrides())
       ],
     ),
@@ -1493,6 +1627,7 @@ class LoginPage extends StatelessWidget {
                               ),
                               onTap: () {
                                 Navigator.pop(context);
+                                //StoreRedirect.redirect(androidAppId: ,iOSAppId: ,);
                               },
                             ),
                           ),

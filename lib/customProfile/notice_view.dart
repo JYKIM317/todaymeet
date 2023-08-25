@@ -45,6 +45,7 @@ class NoticeView extends StatelessWidget {
                         snapshot.data!.docs;
                     return ListView.separated(
                       shrinkWrap: true,
+                      physics: BouncingScrollPhysics(),
                       itemCount: noticeList.length,
                       itemBuilder: (BuildContext ctx, int idx) {
                         String noticeTitle = noticeList[idx].get('title');

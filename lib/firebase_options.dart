@@ -63,10 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1038358532871',
     projectId: 'famat-c5559',
     storageBucket: 'famat-c5559.appspot.com',
-    androidClientId:
-        '1038358532871-rhadvnvp42b304fq7hkkfa5jm593h77j.apps.googleusercontent.com',
-    iosClientId:
-        '1038358532871-acn49tvkhb5273cctss6g83h7nvbtjie.apps.googleusercontent.com',
+    androidClientId: '1038358532871-rhadvnvp42b304fq7hkkfa5jm593h77j.apps.googleusercontent.com',
+    iosClientId: '1038358532871-acn49tvkhb5273cctss6g83h7nvbtjie.apps.googleusercontent.com',
     iosBundleId: 'com.example.famet',
   );
 }
