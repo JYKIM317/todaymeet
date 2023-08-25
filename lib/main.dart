@@ -86,16 +86,7 @@ Future<void> sendMessage({
 void callbackDispatcher() async {
   WidgetsFlutterBinding.ensureInitialized();
   Workmanager().executeTask((task, inputData) async {
-    await sendMessage(
-      userToken:
-          'euZTqcyOokXJlHl00dE2jb:APA91bGDN7PHYsICevYXO8bCDrN6B07YB05baMH4BsH0GU-8o5_pU1twl4bk9I5fY3HxAvlykBnVzHBe5lAqBBSWrUWlUw05T-CzsdBqnJk9khaABVAmkVMi1IiLpIOGU5Ng_uqczaD7',
-      title: 'task name is',
-      body: '$task',
-    );
-    await Firebase.initializeApp().catchError((er) {
-      print('firebase initializeapp method occured error : $er');
-      return Future.error(er);
-    });
+    await Firebase.initializeApp();
     switch (task) {
       case fetchBackground:
         User? currentUser = FirebaseAuth.instance.currentUser;
@@ -218,12 +209,6 @@ void callbackDispatcher() async {
         break;
 
       case iOSPerformFetch:
-        await sendMessage(
-          userToken:
-              'euZTqcyOokXJlHl00dE2jb:APA91bGDN7PHYsICevYXO8bCDrN6B07YB05baMH4BsH0GU-8o5_pU1twl4bk9I5fY3HxAvlykBnVzHBe5lAqBBSWrUWlUw05T-CzsdBqnJk9khaABVAmkVMi1IiLpIOGU5Ng_uqczaD7',
-          title: 'workmanager debug test',
-          body: 'this message send after case taskname "iOSPerformFetch"',
-        );
         User? currentUser = FirebaseAuth.instance.currentUser;
         if (currentUser != null) {
           var userFcmToken;
@@ -356,7 +341,7 @@ void main() async {
   );
   await ScreenUtil.ensureScreenSize();
 
-  await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  await Workmanager().initialize(callbackDispatcher);
   if (Platform.isAndroid) {
     await Workmanager().registerPeriodicTask('checkGroup', fetchBackground,
         frequency: Duration(minutes: 15),
