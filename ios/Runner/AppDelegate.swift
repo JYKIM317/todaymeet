@@ -3,6 +3,8 @@ import Flutter
 import workmanager
 import GoogleMaps
 import Firebase
+import AdSupport
+import AppTrackingTransparency
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {

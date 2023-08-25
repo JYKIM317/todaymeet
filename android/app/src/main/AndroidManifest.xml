@@ -58,9 +58,8 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="high_importance_channel" />
-       <!--ca-app-pub-num~num 현재 test광고 상태라 실제배포 때 바꿔야함-->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-3581534207395265~9322153063"/>
     </application>
 </manifest>

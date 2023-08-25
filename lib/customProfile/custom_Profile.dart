@@ -38,8 +38,8 @@ class _ProfilePageState extends State<ProfilePage> {
     BannerAd _bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/6300978111'
-          : 'ca-app-pub-3940256099942544/2934735716',
+          ? 'ca-app-pub-3581534207395265/4667295019'
+          : 'ca-app-pub-3581534207395265/6785094412',
       listener: bannerAdListener,
       request: AdRequest(),
     );

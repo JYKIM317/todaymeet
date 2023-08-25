@@ -65,7 +65,7 @@ class _GroupSearchState extends State<GroupSearch> {
     List<DocumentSnapshot> datalist = db.docs;
     for (DocumentSnapshot document in datalist) {
       Map<String, dynamic>? datafield =
-      document.data() as Map<String, dynamic>?;
+          document.data() as Map<String, dynamic>?;
       if (datafield != null) {
         String inTitle = datafield['title'].toString();
         String inInfo = datafield['info'].toString();
@@ -89,15 +89,15 @@ class _GroupSearchState extends State<GroupSearch> {
 
   Widget bannerAd() {
     BannerAdListener bannerAdListener =
-    BannerAdListener(onAdWillDismissScreen: (ad) {
+        BannerAdListener(onAdWillDismissScreen: (ad) {
       ad.dispose();
     });
 
     BannerAd _bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/6300978111'
-          : 'ca-app-pub-3940256099942544/2934735716',
+          ? 'ca-app-pub-3581534207395265/4667295019'
+          : 'ca-app-pub-3581534207395265/6785094412',
       listener: bannerAdListener,
       request: AdRequest(),
     );
@@ -149,7 +149,7 @@ class _GroupSearchState extends State<GroupSearch> {
                   if (snapshot.connectionState == ConnectionState.waiting)
                     return Text('');
                   Map<String, dynamic>? blocked =
-                  snapshot.data?.data() as Map<String, dynamic>?;
+                      snapshot.data?.data() as Map<String, dynamic>?;
                   List<dynamic> blocklist = blocked?['blocked'] ?? [];
                   return FutureBuilder<List<dynamic>>(
                     future: getSearchList(searchData),
@@ -158,7 +158,7 @@ class _GroupSearchState extends State<GroupSearch> {
                       if (snapshot.connectionState == ConnectionState.waiting)
                         return Text('');
                       final List<dynamic> activateRoom =
-                      snapshot.data as List<dynamic>;
+                          snapshot.data as List<dynamic>;
                       activateRoom.shuffle();
                       return ListView.separated(
                         physics: BouncingScrollPhysics(),
@@ -167,14 +167,14 @@ class _GroupSearchState extends State<GroupSearch> {
                         itemBuilder: (BuildContext ctx, int idx) {
                           return FutureBuilder<DocumentSnapshot>(
                             future:
-                            _roomlist.doc('${activateRoom[idx].id}').get(),
+                                _roomlist.doc('${activateRoom[idx].id}').get(),
                             builder: (BuildContext context,
                                 AsyncSnapshot<DocumentSnapshot> snapshot) {
                               if (snapshot.hasError) return Text('오류가 발생했습니다.');
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) return Text('');
                               Map<String, dynamic>? data = snapshot.data?.data()
-                              as Map<String, dynamic>?;
+                                  as Map<String, dynamic>?;
                               if (data == null) return SizedBox(height: 0);
                               String host = activateRoom[idx].id;
                               List<dynamic> headcount = data['memberUID'] ?? [];
@@ -292,244 +292,244 @@ class _GroupSearchState extends State<GroupSearch> {
                               }
                               return headcount.isNotEmpty && blockmember != true
                                   ? Container(
-                                height: 94.w,
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.grey, width: 1)),
-                                child: Padding(
-                                  padding: EdgeInsets.all(8.w),
-                                  child: Row(
-                                    children: [
-                                      InkWell(
+                                      height: 94.w,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.grey, width: 1)),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.w),
                                         child: Row(
                                           children: [
-                                            SizedBox(
-                                              width: 70.w,
-                                              child: Stack(
+                                            InkWell(
+                                              child: Row(
                                                 children: [
-                                                  CircleAvatar(
-                                                    backgroundColor:
-                                                    Colors.grey,
-                                                    radius: 32.w,
-                                                    backgroundImage:
-                                                    NetworkImage(
-                                                        '${data['hostPhotoUrl']}'),
-                                                  ),
-                                                  if (headcount.length >=
-                                                      2)
-                                                    Transform.translate(
-                                                      offset: headcount
-                                                          .length ==
-                                                          2
-                                                          ? Offset(
-                                                          35.w, 35.w)
-                                                          : Offset(
-                                                          25.w, 35.w),
-                                                      child: CircleAvatar(
-                                                        backgroundColor:
-                                                        Colors.grey,
-                                                        radius: 18.w,
-                                                        backgroundImage:
-                                                        NetworkImage(
-                                                            '${data['memberPhotoUrl'][0]}'),
-                                                      ),
-                                                    ),
-                                                  if (headcount.length >=
-                                                      3)
-                                                    Transform.translate(
-                                                      offset: Offset(
-                                                          35.w, 35.w),
-                                                      child: CircleAvatar(
-                                                        backgroundColor:
-                                                        Colors.white
-                                                            .withOpacity(
-                                                            0.8),
-                                                        radius: 18.w,
-                                                        child: Center(
-                                                          child: Text(
-                                                            '+${headcount.length - 2}',
-                                                            style:
-                                                            TextStyle(
-                                                              color: Colors
-                                                                  .black,
-                                                              fontSize:
-                                                              12.w,
-                                                              fontWeight:
-                                                              FontWeight
-                                                                  .w700,
+                                                  SizedBox(
+                                                    width: 70.w,
+                                                    child: Stack(
+                                                      children: [
+                                                        CircleAvatar(
+                                                          backgroundColor:
+                                                              Colors.grey,
+                                                          radius: 32.w,
+                                                          backgroundImage:
+                                                              NetworkImage(
+                                                                  '${data['hostPhotoUrl']}'),
+                                                        ),
+                                                        if (headcount.length >=
+                                                            2)
+                                                          Transform.translate(
+                                                            offset: headcount
+                                                                        .length ==
+                                                                    2
+                                                                ? Offset(
+                                                                    35.w, 35.w)
+                                                                : Offset(
+                                                                    25.w, 35.w),
+                                                            child: CircleAvatar(
+                                                              backgroundColor:
+                                                                  Colors.grey,
+                                                              radius: 18.w,
+                                                              backgroundImage:
+                                                                  NetworkImage(
+                                                                      '${data['memberPhotoUrl'][0]}'),
                                                             ),
                                                           ),
-                                                        ),
-                                                      ),
+                                                        if (headcount.length >=
+                                                            3)
+                                                          Transform.translate(
+                                                            offset: Offset(
+                                                                35.w, 35.w),
+                                                            child: CircleAvatar(
+                                                              backgroundColor:
+                                                                  Colors.white
+                                                                      .withOpacity(
+                                                                          0.8),
+                                                              radius: 18.w,
+                                                              child: Center(
+                                                                child: Text(
+                                                                  '+${headcount.length - 2}',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontSize:
+                                                                        12.w,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w700,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                      ],
                                                     ),
+                                                  ),
+                                                  SizedBox(width: 6.w),
+                                                  SizedBox(
+                                                    width: 210.w,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text('${data['title']}',
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .fade,
+                                                            softWrap: false,
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              fontSize: 12.w,
+                                                            )),
+                                                        SizedBox(height: 2.w),
+                                                        Text(
+                                                            '장소: ${data['place']}',
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                    10.w)),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Text(
+                                                                '약속시간: ${data['targetMonth']}월${data['targetDay']}일 ${data['targetHour']}:${data['targetMinute'].toString().length == 1 ? '0${data['targetMinute']}' : data['targetMinute']}',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        10.w)),
+                                                            Text(
+                                                                '인원:${headcount.length}/${data['headcount']}',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        10.w))
+                                                          ],
+                                                        ),
+                                                        Text(
+                                                          '$categoryTextH',
+                                                          maxLines: 1,
+                                                          overflow:
+                                                              TextOverflow.fade,
+                                                          softWrap: false,
+                                                          style: TextStyle(
+                                                              fontSize: 10.w),
+                                                        ),
+                                                        SizedBox(height: 3.w),
+                                                        Text('눌러서 자세히 보기',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    Colors.grey,
+                                                                fontSize: 10.w))
+                                                      ],
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
+                                              onTap: () async {
+                                                await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MemberRoomPage(
+                                                              host: host,
+                                                              inProgress: false,
+                                                            )) //모임 자세히보기
+                                                    );
+                                                setState(() {});
+                                              },
                                             ),
-                                            SizedBox(width: 6.w),
-                                            SizedBox(
-                                              width: 210.w,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .center,
-                                                crossAxisAlignment:
-                                                CrossAxisAlignment
-                                                    .start,
-                                                children: [
-                                                  Text('${data['title']}',
-                                                      maxLines: 1,
-                                                      overflow:
-                                                      TextOverflow
-                                                          .fade,
-                                                      softWrap: false,
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                        FontWeight
-                                                            .w700,
-                                                        fontSize: 12.w,
-                                                      )),
-                                                  SizedBox(height: 2.w),
-                                                  Text(
-                                                      '장소: ${data['place']}',
-                                                      style: TextStyle(
-                                                          fontSize:
-                                                          10.w)),
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                          '약속시간: ${data['targetMonth']}월${data['targetDay']}일 ${data['targetHour']}:${data['targetMinute'].toString().length == 1 ? '0${data['targetMinute']}' : data['targetMinute']}',
-                                                          style: TextStyle(
-                                                              fontSize:
-                                                              10.w)),
-                                                      Text(
-                                                          '인원:${headcount.length}/${data['headcount']}',
-                                                          style: TextStyle(
-                                                              fontSize:
-                                                              10.w))
-                                                    ],
-                                                  ),
-                                                  Text(
-                                                    '$categoryTextH',
-                                                    maxLines: 1,
-                                                    overflow:
-                                                    TextOverflow.fade,
-                                                    softWrap: false,
-                                                    style: TextStyle(
-                                                        fontSize: 10.w),
-                                                  ),
-                                                  SizedBox(height: 3.w),
-                                                  Text('눌러서 자세히 보기',
-                                                      style: TextStyle(
-                                                          color:
-                                                          Colors.grey,
-                                                          fontSize: 10.w))
-                                                ],
-                                              ),
+                                            SizedBox(width: 4.w),
+                                            StreamBuilder<DocumentSnapshot>(
+                                              stream: _userinfo
+                                                  .collection('room')
+                                                  .doc('attention')
+                                                  .snapshots(),
+                                              builder: (BuildContext context,
+                                                  AsyncSnapshot<
+                                                          DocumentSnapshot>
+                                                      snapshot) {
+                                                Map<String, dynamic>? data =
+                                                    snapshot.data?.data()
+                                                        as Map<String,
+                                                            dynamic>?;
+                                                List<dynamic> attention =
+                                                    data != null
+                                                        ? data['attention'] ??
+                                                            []
+                                                        : [];
+                                                return attention.contains(
+                                                            '${activateRoom[idx].id}') !=
+                                                        true
+                                                    ? Container(
+                                                        width: 14.w,
+                                                        alignment: Alignment
+                                                            .bottomCenter,
+                                                        child: InkWell(
+                                                            child: Icon(
+                                                              Icons
+                                                                  .favorite_outline,
+                                                              color: Color(
+                                                                  0xFFEF5350),
+                                                              size: 16.w,
+                                                            ),
+                                                            onTap: () async {
+                                                              attention.add(
+                                                                  '${activateRoom[idx].id}');
+                                                              await _userinfo
+                                                                  .collection(
+                                                                      'room')
+                                                                  .doc(
+                                                                      'attention')
+                                                                  .set({
+                                                                'attention':
+                                                                    attention,
+                                                              });
+                                                              setState(() {});
+                                                            }),
+                                                      )
+                                                    : Container(
+                                                        width: 14.w,
+                                                        alignment: Alignment
+                                                            .bottomCenter,
+                                                        child: InkWell(
+                                                            child: Icon(
+                                                              Icons.favorite,
+                                                              color: Color(
+                                                                  0xFFEF5350),
+                                                              size: 16.w,
+                                                            ),
+                                                            onTap: () async {
+                                                              final int
+                                                                  indexToRemove =
+                                                                  attention.indexOf(
+                                                                      '${activateRoom[idx].id}');
+                                                              attention.removeAt(
+                                                                  indexToRemove);
+                                                              await _userinfo
+                                                                  .collection(
+                                                                      'room')
+                                                                  .doc(
+                                                                      'attention')
+                                                                  .set({
+                                                                'attention':
+                                                                    attention,
+                                                              });
+                                                              setState(() {});
+                                                            }),
+                                                      );
+                                              },
                                             ),
                                           ],
                                         ),
-                                        onTap: () async {
-                                          await Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MemberRoomPage(
-                                                        host: host,
-                                                        inProgress: false,
-                                                      )) //모임 자세히보기
-                                          );
-                                          setState(() {});
-                                        },
                                       ),
-                                      SizedBox(width: 4.w),
-                                      StreamBuilder<DocumentSnapshot>(
-                                        stream: _userinfo
-                                            .collection('room')
-                                            .doc('attention')
-                                            .snapshots(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot<
-                                                DocumentSnapshot>
-                                            snapshot) {
-                                          Map<String, dynamic>? data =
-                                          snapshot.data?.data()
-                                          as Map<String,
-                                              dynamic>?;
-                                          List<dynamic> attention =
-                                          data != null
-                                              ? data['attention'] ??
-                                              []
-                                              : [];
-                                          return attention.contains(
-                                              '${activateRoom[idx].id}') !=
-                                              true
-                                              ? Container(
-                                            width: 14.w,
-                                            alignment: Alignment
-                                                .bottomCenter,
-                                            child: InkWell(
-                                                child: Icon(
-                                                  Icons
-                                                      .favorite_outline,
-                                                  color: Color(
-                                                      0xFFEF5350),
-                                                  size: 16.w,
-                                                ),
-                                                onTap: () async {
-                                                  attention.add(
-                                                      '${activateRoom[idx].id}');
-                                                  await _userinfo
-                                                      .collection(
-                                                      'room')
-                                                      .doc(
-                                                      'attention')
-                                                      .set({
-                                                    'attention':
-                                                    attention,
-                                                  });
-                                                  setState(() {});
-                                                }),
-                                          )
-                                              : Container(
-                                            width: 14.w,
-                                            alignment: Alignment
-                                                .bottomCenter,
-                                            child: InkWell(
-                                                child: Icon(
-                                                  Icons.favorite,
-                                                  color: Color(
-                                                      0xFFEF5350),
-                                                  size: 16.w,
-                                                ),
-                                                onTap: () async {
-                                                  final int
-                                                  indexToRemove =
-                                                  attention.indexOf(
-                                                      '${activateRoom[idx].id}');
-                                                  attention.removeAt(
-                                                      indexToRemove);
-                                                  await _userinfo
-                                                      .collection(
-                                                      'room')
-                                                      .doc(
-                                                      'attention')
-                                                      .set({
-                                                    'attention':
-                                                    attention,
-                                                  });
-                                                  setState(() {});
-                                                }),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
+                                    )
                                   : SizedBox(height: 0);
                             },
                           );
@@ -537,12 +537,12 @@ class _GroupSearchState extends State<GroupSearch> {
                         separatorBuilder: (ctx, idx) {
                           return idx % 5 == 0
                               ? Column(
-                            children: [
-                              SizedBox(height: 8.w),
-                              bannerAd(),
-                              SizedBox(height: 8.w),
-                            ],
-                          )
+                                  children: [
+                                    SizedBox(height: 8.w),
+                                    bannerAd(),
+                                    SizedBox(height: 8.w),
+                                  ],
+                                )
                               : SizedBox(height: 8.w);
                         },
                       );

@@ -23,10 +23,9 @@ class _OtherProfileState extends State<OtherProfile> {
   InterstitialAd? _interstitialAd;
   void interstitialAd() {
     InterstitialAd.load(
-        //id 테스트ID -> 실제 Ad ID로 변경해야함
         adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/1033173712'
-            : 'ca-app-pub-3940256099942544/4411468910',
+            ? 'ca-app-pub-3581534207395265/8086050879'
+            : 'ca-app-pub-3581534207395265/2845849401',
         request: AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
           debugPrint('$ad loaded');
@@ -45,8 +44,8 @@ class _OtherProfileState extends State<OtherProfile> {
     BannerAd _bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/6300978111'
-          : 'ca-app-pub-3940256099942544/2934735716',
+          ? 'ca-app-pub-3581534207395265/4667295019'
+          : 'ca-app-pub-3581534207395265/6785094412',
       listener: bannerAdListener,
       request: AdRequest(),
     );

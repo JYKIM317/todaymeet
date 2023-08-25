@@ -30,6 +30,7 @@ import 'package:workmanager/workmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:yaml/yaml.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
 var _user = FirebaseAuth.instance.currentUser;
 var _userinfo = FirebaseFirestore.instance.collection('users').doc(_user!.uid);
@@ -459,10 +460,9 @@ class _MyAppState extends State<MyApp> {
   InterstitialAd? _interstitialAd;
   void interstitialAd() {
     InterstitialAd.load(
-        //id 테스트ID -> 실제 Ad ID로 변경해야함
         adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/1033173712'
-            : 'ca-app-pub-3940256099942544/4411468910',
+            ? 'ca-app-pub-3581534207395265/8086050879'
+            : 'ca-app-pub-3581534207395265/2845849401',
         request: AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
           debugPrint('$ad loaded');
@@ -476,6 +476,25 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  String _authStatus = 'Unknown';
+  Future<void> initPlugin() async {
+    try {
+      final TrackingStatus status =
+          await AppTrackingTransparency.trackingAuthorizationStatus;
+      setState(() => _authStatus = '$status');
+      if (status == TrackingStatus.notDetermined) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        final TrackingStatus status =
+            await AppTrackingTransparency.requestTrackingAuthorization();
+        setState(() => _authStatus = '$status');
+      }
+    } on PlatformException {
+      setState(() => _authStatus = 'PlatformException was thrown');
+    }
+
+    //final uuid = await AppTrackingTransparency.getAdvertisingIdentifier();
   }
 
   @override
@@ -517,6 +536,7 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
       _userinfo.update({'pushToken': fcmToken});
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) => initPlugin());
   }
 
   @override
@@ -887,8 +907,8 @@ class _HomePageState extends State<HomePage> {
     BannerAd _bannerAd = BannerAd(
       size: AdSize.banner,
       adUnitId: Platform.isAndroid
-          ? 'ca-app-pub-3940256099942544/6300978111'
-          : 'ca-app-pub-3940256099942544/2934735716',
+          ? 'ca-app-pub-3581534207395265/4667295019'
+          : 'ca-app-pub-3581534207395265/6785094412',
       listener: bannerAdListener,
       request: AdRequest(),
     );

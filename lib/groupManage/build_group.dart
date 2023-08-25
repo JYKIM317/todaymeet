@@ -255,10 +255,9 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
   InterstitialAd? _interstitialAd;
   void interstitialAd() {
     InterstitialAd.load(
-        //id 테스트ID -> 실제 Ad ID로 변경해야함
         adUnitId: Platform.isAndroid
-            ? 'ca-app-pub-3940256099942544/1033173712'
-            : 'ca-app-pub-3940256099942544/4411468910',
+            ? 'ca-app-pub-3581534207395265/8086050879'
+            : 'ca-app-pub-3581534207395265/2845849401',
         request: AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(onAdLoaded: (ad) {
           debugPrint('$ad loaded');
