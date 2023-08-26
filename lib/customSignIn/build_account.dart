@@ -201,16 +201,15 @@ class _photobuildState extends State<_photobuild> {
                               alignment: Alignment.center,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(6.w)),
-                              content: Center(
-                                  child: Text(
-                                      "회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n\n\n\n")),
+                              content: Text(
+                                  "회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n\n\n\n"),
                               actions: [
                                 Center(
                                   child: TextButton(
                                       child: Text('알겠습니다!',
                                           style: TextStyle(
                                             color: Color(0xFF51CF6D),
-                                            fontSize: 18,
+                                            fontSize: 18.w,
                                           )),
                                       onPressed: () {
                                         Navigator.of(context).pop();
@@ -291,41 +290,38 @@ class _photobuildState extends State<_photobuild> {
                                           barrierDismissible: false,
                                           context: context,
                                           builder: (BuildContext context) {
-                                            return Center(
-                                              child: AlertDialog(
-                                                alignment: Alignment.center,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            6.w)),
-                                                content: Center(
-                                                    child: Text(
-                                                        "회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n\n\n\n")),
-                                                actions: [
-                                                  Center(
-                                                    child: TextButton(
-                                                        child: Text('알겠습니다!',
-                                                            style: TextStyle(
-                                                              color: Color(
-                                                                  0xFF51CF6D),
-                                                              fontSize: 16.w,
-                                                            )),
-                                                        onPressed: () {
-                                                          Navigator.of(context)
-                                                              .pop();
-                                                          Navigator
-                                                              .pushAndRemoveUntil(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                                builder: (BuildContext
-                                                                        context) =>
-                                                                    main.LoginPage()),
-                                                            (route) => false,
-                                                          );
-                                                        }),
-                                                  )
-                                                ],
-                                              ),
+                                            return AlertDialog(
+                                              alignment: Alignment.center,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          6.w)),
+                                              content: Text(
+                                                  "회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n\n\n\n"),
+                                              actions: [
+                                                Center(
+                                                  child: TextButton(
+                                                      child: Text('알겠습니다!',
+                                                          style: TextStyle(
+                                                            color: Color(
+                                                                0xFF51CF6D),
+                                                            fontSize: 18.w,
+                                                          )),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                        Navigator
+                                                            .pushAndRemoveUntil(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (BuildContext
+                                                                      context) =>
+                                                                  main.LoginPage()),
+                                                          (route) => false,
+                                                        );
+                                                      }),
+                                                )
+                                              ],
                                             );
                                           });
                                     });
