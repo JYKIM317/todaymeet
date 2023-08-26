@@ -191,6 +191,7 @@ class _photobuildState extends State<_photobuild> {
                       'attend': attend,
                       'canMessage': 5,
                       'pushToken': fcmToken,
+                      'userGrade': 'common',
                     }).then((_) {
                       showDialog(
                           barrierDismissible: false,
@@ -284,6 +285,7 @@ class _photobuildState extends State<_photobuild> {
                                           'https://firebasestorage.googleapis.com/v0/b/famat-c5559.appspot.com/o/defaultProfile.jpg?alt=media&token=f3475822-d392-4177-a161-94ea70391cff&_gl=1*19otzw7*_ga*NjQxOTA0NTkwLjE2Nzc4NDYzOTA.*_ga_CW55HF8NVT*MTY4NjA0NTczMi45OC4xLjE2ODYwNDYwMTkuMC4wLjA.',
                                       'canMessage': 5,
                                       'pushToken': fcmToken,
+                                      'userGrade': 'common',
                                     }).then((_) {
                                       showDialog(
                                           barrierDismissible: false,
