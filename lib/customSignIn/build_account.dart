@@ -831,6 +831,7 @@ class _AccountBuildState extends State<AccountBuild> {
                         .where('phonenumber', isEqualTo: phoneNum)
                         .get();
                     if (quitCheck.docs.isNotEmpty) {
+                      int dataindex = 0;
                       final userCheck = quitCheck.docs.first.id;
                       final quitUserCheck = await FirebaseFirestore.instance
                           .collection('quitUsers')
@@ -843,12 +844,6 @@ class _AccountBuildState extends State<AccountBuild> {
                             .collection('users')
                             .doc(_user!.uid)
                             .set(quitUserData);
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => main.LoginPage()),
-                          (route) => false,
-                        );
                         final List subCollectionList = [
                           'chat',
                           'done',
@@ -877,50 +872,83 @@ class _AccountBuildState extends State<AccountBuild> {
                                   .set(subCollectionData);
                               doc.reference.delete();
                             }
+                            dataindex = dataindex + 1;
                           });
+                          if (dataindex == 6) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => main.LoginPage()),
+                              (route) => false,
+                            );
+                            FirebaseFirestore.instance
+                                .collection('quitUsers')
+                                .doc(userCheck)
+                                .delete();
+                          }
                         }
-                        FirebaseFirestore.instance
-                            .collection('quitUsers')
-                            .doc(userCheck)
-                            .delete();
                       }
                     }
-                    nameParameter = nameController.text;
-                    if (nameParameter!.length > 1 &&
-                        nameParameter!.length < 7) {
-                      if (!nameParameter!.contains(' ')) {
-                        showDialog(
-                            barrierDismissible: true,
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6.w)),
-                                content: Text(
-                                    "이름은 한 번 설정하면 변경할 수 없습니다.\n설정하신 이름이 '$nameParameter' 맞습니까?"),
-                                actions: [
-                                  TextButton(
-                                      child: Text('취소',
-                                          style: TextStyle(color: Colors.grey)),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      }),
-                                  TextButton(
-                                      child: Text('확인',
-                                          style: TextStyle(
-                                              color: Color(0xFF51CF6D))),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        _birthdaybuild()));
-                                      })
-                                ],
-                              );
-                            });
+                    if (quitCheck.docs.isEmpty) {
+                      nameParameter = nameController.text;
+                      if (nameParameter!.length > 1 &&
+                          nameParameter!.length < 7) {
+                        if (!nameParameter!.contains(' ')) {
+                          showDialog(
+                              barrierDismissible: true,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6.w)),
+                                  content: Text(
+                                      "이름은 한 번 설정하면 변경할 수 없습니다.\n설정하신 이름이 '$nameParameter' 맞습니까?"),
+                                  actions: [
+                                    TextButton(
+                                        child: Text('취소',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        }),
+                                    TextButton(
+                                        child: Text('확인',
+                                            style: TextStyle(
+                                                color: Color(0xFF51CF6D))),
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          _birthdaybuild()));
+                                        })
+                                  ],
+                                );
+                              });
+                        } else {
+                          showDialog(
+                              barrierDismissible: true,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6.w)),
+                                  content: Text(
+                                      "이름에 공백이 들어갈 수 없습니다.\n입력하신 정보를 확인해주세요"),
+                                  actions: [
+                                    TextButton(
+                                        child: Text('뒤로가기',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        }),
+                                  ],
+                                );
+                              });
+                        }
                       } else {
                         showDialog(
                             barrierDismissible: true,
@@ -929,8 +957,7 @@ class _AccountBuildState extends State<AccountBuild> {
                               return AlertDialog(
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(6.w)),
-                                content: Text(
-                                    "이름에 공백이 들어갈 수 없습니다.\n입력하신 정보를 확인해주세요"),
+                                content: Text('닉네임은 2~6글자로 설정 가능합니다.'),
                                 actions: [
                                   TextButton(
                                       child: Text('뒤로가기',
@@ -942,25 +969,6 @@ class _AccountBuildState extends State<AccountBuild> {
                               );
                             });
                       }
-                    } else {
-                      showDialog(
-                          barrierDismissible: true,
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(6.w)),
-                              content: Text('닉네임은 2~6글자로 설정 가능합니다.'),
-                              actions: [
-                                TextButton(
-                                    child: Text('뒤로가기',
-                                        style: TextStyle(color: Colors.grey)),
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    }),
-                              ],
-                            );
-                          });
                     }
                   },
                 ),

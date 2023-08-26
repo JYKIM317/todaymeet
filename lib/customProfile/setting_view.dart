@@ -353,6 +353,7 @@ class _SettingState extends State<Setting> {
                                                                   0xFFEF5350))),
                                                       onPressed: () async {
                                                         Navigator.pop(context);
+                                                        Navigator.pop(context);
                                                         final quitData =
                                                             await FirebaseFirestore
                                                                 .instance
@@ -420,12 +421,7 @@ class _SettingState extends State<Setting> {
                                                             }
                                                           });
                                                         }
-                                                        /*Navigator.pushAndRemoveUntil(
-                                                    context, MaterialPageRoute(
-                                                      builder: (context) => main.LoginPage()),
-                                                        (route) => false,
-                                                  );*/ //일단 login 페이지로 이동 대신 exit 코드로 앱 종료 처리함
-                                                        FirebaseFirestore
+                                                        await FirebaseFirestore
                                                             .instance
                                                             .collection('users')
                                                             .doc(_user!.uid)
@@ -437,10 +433,24 @@ class _SettingState extends State<Setting> {
                                                             .child(
                                                                 'profile.jpg')
                                                             .delete();
+                                                        await FirebaseAuth
+                                                            .instance
+                                                            .signOut();
                                                         FirebaseAuth.instance
                                                             .currentUser!
                                                             .delete();
-                                                        exit(0);
+                                                        /*Navigator
+                                                            .pushAndRemoveUntil(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  main.LoginPage()),
+                                                          (route) => false,
+                                                        );*/
+                                                        /*Platform.isAndroid
+                                                            ? SystemNavigator
+                                                                .pop()
+                                                            : exit(0);*/
                                                       })
                                                 ],
                                               );
