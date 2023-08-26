@@ -201,8 +201,8 @@ class _photobuildState extends State<_photobuild> {
                               alignment: Alignment.center,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(6.w)),
-                              content: Text(
-                                  "회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n\n\n\n"),
+                              content:
+                                  Text("회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n"),
                               actions: [
                                 Center(
                                   child: TextButton(
@@ -297,7 +297,7 @@ class _photobuildState extends State<_photobuild> {
                                                       BorderRadius.circular(
                                                           6.w)),
                                               content: Text(
-                                                  "회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n\n\n\n"),
+                                                  "회원가입에 감사드립니다!\n건전하고 즐거운 모임 즐겨주세요\n"),
                                               actions: [
                                                 Center(
                                                   child: TextButton(
