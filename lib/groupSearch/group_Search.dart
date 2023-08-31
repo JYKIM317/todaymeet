@@ -70,9 +70,11 @@ class _GroupSearchState extends State<GroupSearch> {
         String inTitle = datafield['title'].toString();
         String inInfo = datafield['info'].toString();
         String inCategories = datafield['Categories'].join('  ');
+        String inPlace = datafield['place'].toString();
         if (inTitle.contains(search) ||
             inInfo.contains(search) ||
-            inCategories.contains(search)) {
+            inCategories.contains(search) ||
+            inPlace.contains(search)) {
           result.add(document);
         }
       }

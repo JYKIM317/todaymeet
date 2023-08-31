@@ -566,7 +566,7 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                                                                     maxWidth:
                                                                         180.w),
                                                             child: Text(
-                                                              "${member['introduce'].toString().replaceAll('\n', ' ')}",
+                                                              "${member['introduce'] ?? ''.toString().replaceAll('\n', ' ')}",
                                                               style: TextStyle(
                                                                 fontSize: 16.w,
                                                                 color:

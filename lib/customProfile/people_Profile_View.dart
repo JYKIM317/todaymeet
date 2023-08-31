@@ -768,7 +768,7 @@ class _OtherProfileState extends State<OtherProfile> {
                                                         fontSize: 20.w),
                                                   ),
                                                   content: Text(
-                                                      '모임이 정상적으로 시작되고,\n실제로 모임에 참가한 비율을 알려줍니다.\n약속을 지키는 것은 서로에 대한 배려이니\n모임을 약속했다면 지키도록 노력해야합니다.',
+                                                      '모임이 정상적으로 시작되고,\n실제로 모임에 참가한 비율을 알려줍니다.\n약속을 지키는 것은 서로에 대한 배려이니\n모임을 약속했다면 지키도록 노력해야합니다.\n\n모임이 시작되면 반드시 출석체크를 진행해주세요',
                                                       style: TextStyle(
                                                           fontSize: 16.w)),
                                                 );
