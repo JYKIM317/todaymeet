@@ -7,6 +7,42 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:1038358532871:android:15d92f490b9a2fd5162ba2",
+        "android_client_info": {
+          "package_name": "com.delivalue.famet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038358532871-g3ioqao5ndv7idaopvmmjat5p9f24j69.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsSSYPK-JDNVA04nKQC9yrcGsNzLkOfNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038358532871-g3ioqao5ndv7idaopvmmjat5p9f24j69.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1038358532871-acn49tvkhb5273cctss6g83h7nvbtjie.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.famet"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:1038358532871:android:7cb43728c04839c3162ba2",
         "android_client_info": {
           "package_name": "com.example.famet"

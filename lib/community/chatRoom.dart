@@ -170,7 +170,7 @@ class _ChattingState extends State<Chatting> {
                                             constraints:
                                                 BoxConstraints(maxWidth: 120.w),
                                             child: Text(
-                                              "${data['introduce'] ?? ''.toString().replaceAll('\n', ' ')}",
+                                              "${(data['introduce'] ?? '').toString().replaceAll('\n', ' ')}",
                                               style: TextStyle(
                                                 fontSize: 16.w,
                                                 color: Colors.grey,

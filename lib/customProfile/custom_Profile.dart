@@ -17,6 +17,7 @@ import 'notice_view.dart';
 import 'setting_view.dart' as setting;
 import 'package:famet/main.dart' as main;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'change_userInfo.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -169,12 +170,33 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 48.w,
                         alignment: Alignment.center,
                         padding: EdgeInsets.only(top: 15.w),
-                        child: Text(
-                          '생년월일',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Color(0xFF51CF6D),
-                              fontSize: 16.w),
+                        child: Row(
+                          children: [
+                            Text(
+                              '생년월일',
+                              style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: Color(0xFF51CF6D),
+                                  fontSize: 16.w),
+                            ),
+                            if (data?['year'] == 1111)
+                              InkWell(
+                                child: SizedBox(
+                                  child: Icon(
+                                    Icons.edit,
+                                    size: 18.w,
+                                  ),
+                                ),
+                                onTap: () async {
+                                  await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              BirthDayChange()));
+                                  setState(() {});
+                                },
+                              ),
+                          ],
                         ),
                       ),
                       SizedBox(
@@ -199,12 +221,33 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 48.w,
                         alignment: Alignment.center,
                         padding: EdgeInsets.only(top: 15.w),
-                        child: Text(
-                          '성별',
-                          style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              decorationColor: Color(0xFF51CF6D),
-                              fontSize: 16.w),
+                        child: Row(
+                          children: [
+                            Text(
+                              '성별',
+                              style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: Color(0xFF51CF6D),
+                                  fontSize: 16.w),
+                            ),
+                            if (data?['gender'] == '미설정')
+                              InkWell(
+                                child: SizedBox(
+                                  child: Icon(
+                                    Icons.edit,
+                                    size: 18.w,
+                                  ),
+                                ),
+                                onTap: () async {
+                                  await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              GenderChange()));
+                                  setState(() {});
+                                },
+                              ),
+                          ],
                         ),
                       ),
                       SizedBox(
@@ -286,26 +329,27 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   SizedBox(
                     child: InkWell(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            height: 48.w,
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.fromLTRB(0, 15.w, 0, 10.w),
-                            child: Text(
+                      child: Container(
+                        height: 48.w,
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.fromLTRB(0, 15.w, 0, 10.w),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
                               '자기소개',
                               style: TextStyle(
                                   decoration: TextDecoration.underline,
                                   decorationColor: Color(0xFF51CF6D),
                                   fontSize: 16.w),
                             ),
-                          ),
-                          Icon(
-                            Icons.edit,
-                            size: 18.w,
-                          )
-                        ],
+                            Icon(
+                              Icons.edit,
+                              size: 18.w,
+                            ),
+                          ],
+                        ),
                       ),
                       onTap: () {
                         introState = true;
@@ -385,30 +429,23 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   SizedBox(
                     child: InkWell(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            height: 48.w,
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.only(top: 15.w),
-                            child: Text(
+                      child: Container(
+                          height: 48.w,
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(top: 15.w),
+                          child: Row(mainAxisSize: MainAxisSize.min, children: [
+                            Text(
                               '관심 카테고리',
                               style: TextStyle(
                                   decoration: TextDecoration.underline,
                                   decorationColor: Color(0xFF51CF6D),
                                   fontSize: 16.w),
                             ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(top: 15.w),
-                            child: Icon(
+                            Icon(
                               Icons.edit,
                               size: 18.w,
                             ),
-                          )
-                        ],
-                      ),
+                          ])),
                       onTap: () async {
                         await Navigator.push(
                             context,
@@ -445,29 +482,26 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   SizedBox(
                     child: InkWell(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            height: 48.w,
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.only(top: 15.w),
-                            child: Text(
+                      child: Container(
+                        height: 48.w,
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.only(top: 15.w),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
                               'MBTI',
                               style: TextStyle(
                                   decoration: TextDecoration.underline,
                                   decorationColor: Color(0xFF51CF6D),
                                   fontSize: 16.w),
                             ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(top: 15.w),
-                            child: Icon(
+                            Icon(
                               Icons.edit,
                               size: 20.w,
                             ),
-                          )
-                        ],
+                          ],
+                        ),
                       ),
                       onTap: () async {
                         await Navigator.push(
@@ -594,14 +628,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           children: [
                             SizedBox(
                               child: InkWell(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Container(
-                                      height: 48.w,
-                                      alignment: Alignment.center,
-                                      padding: EdgeInsets.only(top: 15.w),
-                                      child: Text(
+                                child: Container(
+                                  height: 48.w,
+                                  alignment: Alignment.centerLeft,
+                                  padding: EdgeInsets.only(top: 15.w),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
                                         '한 줄 후기',
                                         style: TextStyle(
                                             decoration:
@@ -609,15 +643,12 @@ class _ProfilePageState extends State<ProfilePage> {
                                             decorationColor: Color(0xFF51CF6D),
                                             fontSize: 16.w),
                                       ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.only(top: 15.w),
-                                      child: Icon(
+                                      Icon(
                                         Icons.folder_open,
                                         size: 20.w,
                                       ),
-                                    )
-                                  ],
+                                    ],
+                                  ),
                                 ),
                                 onTap: () {
                                   Navigator.push(

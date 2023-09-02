@@ -1,4 +1,4 @@
-package com.example.todaymeet
+package com.delivalue.famet
 
 import io.flutter.embedding.android.FlutterActivity
 

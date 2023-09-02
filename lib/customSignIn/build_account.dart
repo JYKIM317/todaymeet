@@ -359,29 +359,63 @@ class _genderbuildState extends State<_genderbuild> {
             children: [
               Container(
                 alignment: Alignment.centerLeft,
-                child: InkWell(
-                  child: SizedBox(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.grey,
-                          size: 18.w,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      child: SizedBox(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.grey,
+                              size: 18.w,
+                            ),
+                            Text(
+                              '뒤로가기',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.w,
+                              ),
+                            )
+                          ],
                         ),
-                        Text(
-                          '뒤로가기',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12.w,
-                          ),
-                        )
-                      ],
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
                     ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
+                    InkWell(
+                      child: SizedBox(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '건너뛰기',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.w,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.grey,
+                              size: 18.w,
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        genderParameter = '미설정';
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    _photobuild()));
+                      },
+                    ),
+                  ],
                 ),
               ),
               Expanded(
@@ -535,29 +569,65 @@ class __birthdaybuildState extends State<_birthdaybuild> {
             children: [
               Container(
                 alignment: Alignment.centerLeft,
-                child: InkWell(
-                  child: SizedBox(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.grey,
-                          size: 18.w,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      child: SizedBox(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.grey,
+                              size: 18.w,
+                            ),
+                            Text(
+                              '뒤로가기',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.w,
+                              ),
+                            )
+                          ],
                         ),
-                        Text(
-                          '뒤로가기',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12.w,
-                          ),
-                        )
-                      ],
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
                     ),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
+                    InkWell(
+                      child: SizedBox(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '건너뛰기',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 12.w,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.grey,
+                              size: 18.w,
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () {
+                        yearParameter = 1111;
+                        monthParameter = 1;
+                        dayParameter = 1;
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    _genderbuild()));
+                      },
+                    ),
+                  ],
                 ),
               ),
               Expanded(
@@ -743,7 +813,16 @@ class AccountBuild extends StatefulWidget {
 class _AccountBuildState extends State<AccountBuild> {
   TextEditingController nameController = TextEditingController();
   static final _formKey = GlobalKey<FormState>();
-
+  final List<String> blocknamelist = [
+    '오늘모임',
+    '운영자',
+    '시발',
+    'ㅅㅂ',
+    '병신',
+    'ㅂㅅ',
+    '장애인',
+    '새끼',
+  ];
   @override
   void initState() {
     _user = FirebaseAuth.instance.currentUser;
@@ -890,39 +969,72 @@ class _AccountBuildState extends State<AccountBuild> {
                       if (nameParameter!.length > 1 &&
                           nameParameter!.length < 7) {
                         if (!nameParameter!.contains(' ')) {
-                          showDialog(
-                              barrierDismissible: true,
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6.w)),
-                                  content: Text(
-                                      "이름은 한 번 설정하면 변경할 수 없습니다.\n설정하신 이름이 '$nameParameter' 맞습니까?"),
-                                  actions: [
-                                    TextButton(
-                                        child: Text('취소',
-                                            style:
-                                                TextStyle(color: Colors.grey)),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        }),
-                                    TextButton(
-                                        child: Text('확인',
-                                            style: TextStyle(
-                                                color: Color(0xFF51CF6D))),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          _birthdaybuild()));
-                                        })
-                                  ],
-                                );
-                              });
+                          bool badnameState = false;
+                          String badnamePar = '';
+                          for (String word in blocknamelist) {
+                            if (nameParameter!.contains(word)) {
+                              badnameState = true;
+                              badnamePar = word;
+                            }
+                          }
+                          if (!badnameState) {
+                            showDialog(
+                                barrierDismissible: true,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(6.w)),
+                                    content: Text(
+                                        "이름은 한 번 설정하면 변경할 수 없습니다.\n설정하신 이름이 '$nameParameter' 맞습니까?"),
+                                    actions: [
+                                      TextButton(
+                                          child: Text('취소',
+                                              style: TextStyle(
+                                                  color: Colors.grey)),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          }),
+                                      TextButton(
+                                          child: Text('확인',
+                                              style: TextStyle(
+                                                  color: Color(0xFF51CF6D))),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        _birthdaybuild()));
+                                          })
+                                    ],
+                                  );
+                                });
+                          } else if (badnameState) {
+                            showDialog(
+                                barrierDismissible: true,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(6.w)),
+                                    content: Text(
+                                        "이름에 부적절한 내용이 포함되어있습니다\n내용 : '$badnamePar'"),
+                                    actions: [
+                                      TextButton(
+                                          child: Text('뒤로가기',
+                                              style: TextStyle(
+                                                  color: Colors.grey)),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          }),
+                                    ],
+                                  );
+                                });
+                          }
                         } else {
                           showDialog(
                               barrierDismissible: true,
