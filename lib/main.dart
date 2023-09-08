@@ -31,6 +31,7 @@ import 'package:http/http.dart' as http;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:yaml/yaml.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 var _user = FirebaseAuth.instance.currentUser;
 var _userinfo = FirebaseFirestore.instance.collection('users').doc(_user!.uid);
@@ -340,13 +341,15 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await ScreenUtil.ensureScreenSize();
-
   await Workmanager().initialize(callbackDispatcher);
   if (Platform.isAndroid) {
     await Workmanager().registerPeriodicTask('checkGroup', fetchBackground,
         frequency: Duration(minutes: 15),
         constraints: Constraints(networkType: NetworkType.connected));
   }
+
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   var initialzationSettingsIOS = DarwinInitializationSettings(
     requestSoundPermission: true,
     requestBadgePermission: true,
@@ -396,6 +399,7 @@ void main() async {
     var pushtoken = await FirebaseMessaging.instance.getToken();
     _userinfo.update({'pushToken': pushtoken});
   }
+  analytics.logAppOpen();
   runApp(ProviderScope(
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -441,7 +445,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
-
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   InterstitialAd? _interstitialAd;
   void interstitialAd() {
     InterstitialAd.load(
@@ -1536,11 +1540,13 @@ class _HomePageState extends State<HomePage> {
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
   @override
+  static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   Widget build(BuildContext context) {
     _user = FirebaseAuth
         .instance.currentUser; //widget rebuild 시 currentuser cached repair
     var currentVersion;
     showUpdateAlert(bool required) {
+      analytics.logEvent(name: 'Show_UpdateAlert');
       return showDialog(
           barrierDismissible: false,
           context: context,
@@ -1604,6 +1610,7 @@ class LoginPage extends StatelessWidget {
                                 ),
                               ),
                               onTap: () {
+                                analytics.logEvent(name: 'Update_denied');
                                 Navigator.pop(context);
                               },
                             ),
@@ -1630,9 +1637,17 @@ class LoginPage extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              onTap: () {
+                              onTap: () async {
+                                await analytics.logEvent(
+                                    name: 'Update_agree',
+                                    parameters: {
+                                      'required': required.toString()
+                                    });
                                 Navigator.pop(context);
-                                //StoreRedirect.redirect(androidAppId: ,iOSAppId: ,);
+                                StoreRedirect.redirect(
+                                  androidAppId: "com.delivalue.famet",
+                                  iOSAppId: "6463500146",
+                                );
                               },
                             ),
                           ),
@@ -1704,6 +1719,7 @@ class LoginPage extends StatelessWidget {
                 } else if (snapshot.hasError) {
                   return LoginPage();
                 } else if (!snapshot.hasData || snapshot.data!.data() == null) {
+                  analytics.logEvent(name: 'Move_AccountBuild');
                   return AccountBuild();
                 }
                 Map<String, dynamic>? infoData =
@@ -1762,7 +1778,6 @@ class LoginPage extends StatelessWidget {
                     showUpdateAlert(requiredExist);
                   }
                 });
-
                 return FutureBuilder<DocumentSnapshot>(
                   future: FirebaseFirestore.instance
                       .collection('bannedUsers')
@@ -1770,9 +1785,12 @@ class LoginPage extends StatelessWidget {
                       .get(),
                   builder: (BuildContext context,
                       AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    print('double screen build debug 1-1');
                     Map<String, dynamic>? blockUserData =
                         snapshot.data?.data() as Map<String, dynamic>?;
                     if (blockUserData == null) {
+                      print('double screen build debug 2');
+                      analytics.logLogin();
                       return ProgressHUD(child: MyApp());
                     } else {
                       return BannedPage(bannedUser: accountPhoneNum);

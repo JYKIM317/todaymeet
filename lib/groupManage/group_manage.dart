@@ -10,6 +10,7 @@ import 'package:famet/roomType/done_room_screen.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 User? _user = FirebaseAuth.instance.currentUser;
 DocumentReference _roominfoM = FirebaseFirestore.instance
@@ -78,6 +79,8 @@ class GroupManagePage extends StatefulWidget {
 class _GroupManagePageState extends State<GroupManagePage> {
   bool roomStateM = true, roomStateJ = false, roomStateI = false;
   bool viewState = true;
+
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   @override
   void initState() {
@@ -209,6 +212,9 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                     onPressed: () async {
                                       if (roomStateM == false) {
                                         progress?.show();
+                                        await FirebaseAnalytics.instance
+                                            .logEvent(
+                                                name: 'Create_BuildGroup');
                                         await Future.delayed(
                                             Duration(seconds: 1), () {
                                           progress?.dismiss();
