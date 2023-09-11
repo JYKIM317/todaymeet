@@ -212,9 +212,8 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                     onPressed: () async {
                                       if (roomStateM == false) {
                                         progress?.show();
-                                        await FirebaseAnalytics.instance
-                                            .logEvent(
-                                                name: 'Create_BuildGroup');
+                                        analytics.logEvent(
+                                            name: 'Create_BuildGroup');
                                         await Future.delayed(
                                             Duration(seconds: 1), () {
                                           progress?.dismiss();
@@ -296,6 +295,9 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                 'timeStamp': targetTime,
                                 'state': 'notEnough',
                               });
+                              analytics.logEvent(
+                                  name: 'Group_start_failed',
+                                  parameters: {'status': 'notEnough'});
                               FirebaseFirestore.instance
                                   .collection('users')
                                   .doc(_user!.uid)
@@ -338,7 +340,9 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                   'timeStamp': targetTime,
                                   'state': 'start',
                                 });
+                                analytics.logEvent(name: 'Group_UserCount');
                               }
+                              analytics.logEvent(name: 'Group_start');
                               FirebaseFirestore.instance
                                   .collection('inProgressRoom')
                                   .doc(_user!.uid)
@@ -402,6 +406,8 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                         .update({
                                       'attend': FieldValue.increment(1),
                                     });
+                                    analytics.logEvent(
+                                        name: 'Group_attend_UserCount');
                                   }
                                   FirebaseFirestore.instance
                                       .collection('users')
@@ -428,11 +434,18 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                     'reviewState': false,
                                   });
                                 }
+                                analytics.logEvent(
+                                    name: 'Group_done',
+                                    parameters: {'status': 'attend'});
                                 sendMessage(
                                   userToken: data['memberTokenList'],
                                   title: '오늘모임',
                                   body: '모임이 종료되었습니다. 모임에 대한 후기를 작성해주세요!',
                                 );
+                              } else {
+                                analytics.logEvent(
+                                    name: 'Group_done',
+                                    parameters: {'status': 'absent'});
                               }
                               FirebaseFirestore.instance
                                   .collection('users')
@@ -709,6 +722,9 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                                   'attend':
                                                       FieldValue.increment(1),
                                                 });
+                                                analytics.logEvent(
+                                                    name:
+                                                        'Group_attend_UserCount');
                                               }
                                               FirebaseFirestore.instance
                                                   .collection('users')
@@ -742,6 +758,11 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                                 'reviewState': false,
                                               });
                                             }
+                                            analytics.logEvent(
+                                                name: 'Group_done',
+                                                parameters: {
+                                                  'status': 'attend'
+                                                });
                                             sendMessage(
                                               userToken:
                                                   data['memberTokenList'],
@@ -749,6 +770,12 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                               body:
                                                   '모임이 종료되었습니다. 모임에 대한 후기를 작성해주세요!',
                                             );
+                                          } else {
+                                            analytics.logEvent(
+                                                name: 'Group_done',
+                                                parameters: {
+                                                  'status': 'absent'
+                                                });
                                           }
                                           FirebaseFirestore.instance
                                               .collection('users')
@@ -1016,7 +1043,11 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                               'timeStamp': targetTime,
                                               'state': 'start',
                                             });
+                                            analytics.logEvent(
+                                                name: 'Group_UserCount');
                                           }
+                                          analytics.logEvent(
+                                              name: 'Group_start');
                                           FirebaseFirestore.instance
                                               .collection('inProgressRoom')
                                               .doc('$host')
@@ -1323,44 +1354,6 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                               data['memberUID'] ?? [];
                                           categoryTextH =
                                               data['Categories'].join('  ');
-                                          final targetTime = DateTime(
-                                              data['targetYear'] as int,
-                                              data['targetMonth'] as int,
-                                              data['targetDay'] as int,
-                                              data['targetHour'] as int,
-                                              data['targetMinute'] as int);
-                                          if (targetTime
-                                                  .isBefore(DateTime.now()) &&
-                                              headcount.length == 1) {
-                                            FirebaseFirestore.instance
-                                                .collection('users')
-                                                .doc('${attention[idx]}')
-                                                .collection('chat')
-                                                .doc('${data['chatRoom']}')
-                                                .delete();
-                                            FirebaseFirestore.instance
-                                                .collection('chatRoom')
-                                                .doc('available')
-                                                .collection(
-                                                    '${data['chatRoom']}')
-                                                .get()
-                                                .then((snapshot) {
-                                              for (DocumentSnapshot doc
-                                                  in snapshot.docs) {
-                                                doc.reference.delete();
-                                              }
-                                            });
-                                            _activeRoom
-                                                .doc('${attention[idx]}')
-                                                .delete();
-                                            FirebaseFirestore.instance
-                                                .collection('users')
-                                                .doc('${attention[idx]}')
-                                                .collection('room')
-                                                .doc('made')
-                                                .delete();
-                                            return SizedBox(height: 0);
-                                          }
                                           return Container(
                                             height: 94.w,
                                             width: double.infinity,

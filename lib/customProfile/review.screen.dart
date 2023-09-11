@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:async/async.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class ReviewPage extends StatefulWidget {
   final roomname;
@@ -14,10 +16,12 @@ class ReviewPage extends StatefulWidget {
 }
 
 class _ReviewPageState extends State<ReviewPage> {
+  final AsyncMemoizer _memoizer = AsyncMemoizer();
   TextEditingController reviewController = TextEditingController();
   String? reviewParameter;
   User? _user = FirebaseAuth.instance.currentUser;
   Map<String, dynamic> reviewValue = {};
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
   @override
   void initState() {
     reviewController = TextEditingController();
@@ -25,6 +29,14 @@ class _ReviewPageState extends State<ReviewPage> {
     reviewValue = {};
     _user = FirebaseAuth.instance.currentUser;
     super.initState();
+  }
+
+  _roomData() {
+    return _memoizer.runOnce(() async {
+      final roomdata = await widget.roomname.get();
+      Map<String, dynamic> data = roomdata.data() as Map<String, dynamic>;
+      return data;
+    });
   }
 
   @override
@@ -37,15 +49,14 @@ class _ReviewPageState extends State<ReviewPage> {
           child: Column(
             children: [
               SizedBox(height: 24.w),
-              FutureBuilder<DocumentSnapshot>(
-                  future: widget.roomname.get(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+              FutureBuilder(
+                  future: _roomData(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
                     if (snapshot.hasError) return Text('오류가 발생했습니다.');
                     if (snapshot.connectionState == ConnectionState.waiting)
                       return Center(child: Text(''));
-                    Map<String, dynamic> data =
-                        snapshot.data!.data() as Map<String, dynamic>;
+                    //Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+                    Map<String, dynamic> data = snapshot.data;
                     List<dynamic> headcount = data['memberUID'];
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,6 +428,7 @@ class _ReviewPageState extends State<ReviewPage> {
                 }
               }
               await widget.roomname.update({'reviewState': true});
+              analytics.logEvent(name: 'Review_Write_sucsess');
               Navigator.pop(context);
               Navigator.pop(context);
             },

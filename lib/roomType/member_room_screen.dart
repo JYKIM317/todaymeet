@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 const fcmServerKey =
     'AAAA8cL90wc:APA91bF-RBJ3dRn0d_1uSIoJE1BNIzaA8weml0I-3xVH44Zshxqgo7342rmr5TT1JDE-aNNej6DekBinmbSTQ2llvBCBxE4EqHTSQ1x-UwxphCorQWAUcrb_c3jaNiQfEu04IhgETBQf';
@@ -65,6 +66,7 @@ class _MemberRoomPageState extends State<MemberRoomPage> {
       memberToken = [];
   late DateTime targetTime;
   BottomDrawerController attendController = BottomDrawerController();
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   InterstitialAd? _interstitialAd;
   void interstitialAd() {
@@ -841,6 +843,9 @@ class _MemberRoomPageState extends State<MemberRoomPage> {
                                           : membercount!.length < limitmember!
                                               ? {
                                                   requestCheck.add(_user!.uid),
+                                                  analytics.logEvent(
+                                                      name:
+                                                          'request_Join_Group'),
                                                   await _requestAdress.update({
                                                     'requestUID': requestCheck
                                                   }),
@@ -912,6 +917,9 @@ class _MemberRoomPageState extends State<MemberRoomPage> {
                                     headcount.removeAt(indexToRemove);
                                     headcountPhoto.removeAt(indexToRemove - 1);
                                     memberToken.removeAt(indexToRemove);
+                                    analytics.logEvent(
+                                        name: 'leave_Group',
+                                        parameters: {'status': 'self'});
                                     final String chat = await chatRoomName();
                                     await _requestAdress.update({
                                       'memberUID': headcount,
@@ -1006,6 +1014,7 @@ class _MemberRoomPageState extends State<MemberRoomPage> {
                           final int indexToRemove =
                               requestCheck.indexOf('${_user!.uid}');
                           requestCheck.removeAt(indexToRemove);
+                          analytics.logEvent(name: 'request_Join_Group_cancle');
                           await _requestAdress
                               .update({'requestUID': requestCheck});
                         },

@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:famet/main.dart' as main;
 import 'package:yaml/yaml.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 class Setting extends StatefulWidget {
   const Setting({Key? key}) : super(key: key);
@@ -23,6 +24,7 @@ class _SettingState extends State<Setting> {
   var _userinfo;
   late bool eventpush;
   var currentVersion;
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   @override
   void initState() {
@@ -354,6 +356,9 @@ class _SettingState extends State<Setting> {
                                                       onPressed: () async {
                                                         Navigator.pop(context);
                                                         Navigator.pop(context);
+                                                        analytics.logEvent(
+                                                            name:
+                                                                'Account_Withdrawal');
                                                         final quitData =
                                                             await FirebaseFirestore
                                                                 .instance

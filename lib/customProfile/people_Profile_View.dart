@@ -7,6 +7,7 @@ import 'package:famet/community/chatRoom.dart';
 import 'simple_Review.dart';
 import 'full_ProfilePhoto.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 late DocumentReference _userinfo;
 
@@ -19,6 +20,7 @@ class OtherProfile extends StatefulWidget {
 
 class _OtherProfileState extends State<OtherProfile> {
   User? _user = FirebaseAuth.instance.currentUser;
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   InterstitialAd? _interstitialAd;
   void interstitialAd() {
@@ -305,6 +307,8 @@ class _OtherProfileState extends State<OtherProfile> {
                                         _interstitialAd?.show();
                                       String messageRoom = await messageExist();
                                       if (messageRoom == 'empty') {
+                                        analytics.logEvent(
+                                            name: 'conversation_request');
                                         List<dynamic> responseMyData =
                                             await currentUserInfo();
                                         if (responseMyData[0] > 0) {

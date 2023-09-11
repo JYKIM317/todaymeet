@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 User? _user = FirebaseAuth.instance.currentUser;
 DocumentReference _roominfoM = FirebaseFirestore.instance
@@ -69,6 +70,7 @@ class _HostRoomPageState extends State<HostRoomPage> {
   late int limitmember;
   late DateTime targetTime;
   late String roomTitle;
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   InterstitialAd? _interstitialAd;
   void interstitialAd() {
@@ -263,6 +265,8 @@ class _HostRoomPageState extends State<HostRoomPage> {
                                   DateTime.now().hour,
                                   DateTime.now().minute,
                                 );
+                                analytics.logEvent(
+                                    name: 'request_Join_Group_denied');
                                 await FirebaseFirestore.instance
                                     .collection('users')
                                     .doc('${requestUser[index]}')
@@ -397,6 +401,9 @@ class _HostRoomPageState extends State<HostRoomPage> {
                                               'timeStamp': acceptTime,
                                               'state': 'accept',
                                             }),
+                                            analytics.logEvent(
+                                                name:
+                                                    'request_Join_Group_accept'),
                                             await sendMessage(
                                                 userToken: [data['pushToken']],
                                                 title: '오늘모임',
@@ -566,6 +573,9 @@ class _HostRoomPageState extends State<HostRoomPage> {
                                         .inMinutes >
                                     30) {
                                   final String chat = await chatRoomName();
+                                  analytics.logEvent(
+                                      name: 'leave_Group',
+                                      parameters: {'status': 'kick'});
                                   await FirebaseFirestore.instance
                                       .collection('users')
                                       .doc('${member[index + 1]}')
@@ -1344,6 +1354,11 @@ class _HostRoomPageState extends State<HostRoomPage> {
                                                         .inMinutes >
                                                     30 ||
                                                 member.length == 1) {
+                                              analytics.logEvent(
+                                                  name: 'Group_start_failed',
+                                                  parameters: {
+                                                    'status': 'dismiss'
+                                                  });
                                               final dismissTime = DateTime(
                                                 DateTime.now().year,
                                                 DateTime.now().month,

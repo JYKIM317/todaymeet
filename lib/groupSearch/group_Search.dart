@@ -8,6 +8,7 @@ import 'package:famet/roomType/member_room_screen.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 var _userinfo = FirebaseFirestore.instance.collection('users').doc(_user!.uid);
 var _user = FirebaseAuth.instance.currentUser;
@@ -58,6 +59,7 @@ class _GroupSearchState extends State<GroupSearch> {
   TextEditingController searchController = TextEditingController();
   String searchData = '';
   List<dynamic> searchList = [];
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   Future<List<dynamic>> getSearchList(String search) async {
     List<dynamic> result = [];
@@ -135,6 +137,8 @@ class _GroupSearchState extends State<GroupSearch> {
             onSubmitted: (value) {
               searchData = searchController.text;
               progress?.show();
+              analytics.logEvent(
+                  name: 'Search_Group', parameters: {'searchData': searchData});
               Future.delayed(Duration(seconds: 1), () {});
               setState(() {});
               progress?.dismiss();
@@ -205,6 +209,9 @@ class _GroupSearchState extends State<GroupSearch> {
                                   'timeStamp': targetTime,
                                   'state': 'notEnough',
                                 });
+                                analytics.logEvent(
+                                    name: 'Group_start_failed',
+                                    parameters: {'status': 'notEnough'});
                                 FirebaseFirestore.instance
                                     .collection('users')
                                     .doc('${activateRoom[idx].id}')
@@ -255,7 +262,9 @@ class _GroupSearchState extends State<GroupSearch> {
                                     'timeStamp': targetTime,
                                     'state': 'start',
                                   });
+                                  analytics.logEvent(name: 'Group_UserCount');
                                 }
+                                analytics.logEvent(name: 'Group_start');
                                 FirebaseFirestore.instance
                                     .collection('inProgressRoom')
                                     .doc('${activateRoom[idx].id}')
@@ -434,8 +443,13 @@ class _GroupSearchState extends State<GroupSearch> {
                                                   ),
                                                 ],
                                               ),
-                                              onTap: () async {
-                                                await Navigator.push(
+                                              onTap: () {
+                                                analytics.logEvent(
+                                                    name: 'View_Room',
+                                                    parameters: {
+                                                      'Category': categoryTextH,
+                                                    });
+                                                Navigator.push(
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
@@ -444,7 +458,6 @@ class _GroupSearchState extends State<GroupSearch> {
                                                               inProgress: false,
                                                             )) //모임 자세히보기
                                                     );
-                                                setState(() {});
                                               },
                                             ),
                                             SizedBox(width: 4.w),

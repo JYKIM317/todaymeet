@@ -445,7 +445,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _selectedIndex = 0;
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   InterstitialAd? _interstitialAd;
   void interstitialAd() {
     InterstitialAd.load(
@@ -911,6 +911,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   @override
   void initState() {
     super.initState();
@@ -1182,6 +1184,9 @@ class _HomePageState extends State<HomePage> {
                                     title: '오늘모임',
                                     body: '개설하신 모임이 인원 미충족으로 해체되었습니다.',
                                   );
+                                  analytics.logEvent(
+                                      name: 'Group_start_failed',
+                                      parameters: {'status': 'notEnough'});
                                   FirebaseFirestore.instance
                                       .collection('users')
                                       .doc('${activateRoom[idx].id}')
@@ -1222,7 +1227,9 @@ class _HomePageState extends State<HomePage> {
                                       'timeStamp': targetTime,
                                       'state': 'start',
                                     });
+                                    analytics.logEvent(name: 'Group_UserCount');
                                   }
+                                  analytics.logEvent(name: 'Group_start');
                                   FirebaseFirestore.instance
                                       .collection('inProgressRoom')
                                       .doc('${activateRoom[idx].id}')
@@ -1410,6 +1417,12 @@ class _HomePageState extends State<HomePage> {
                                                   ],
                                                 ),
                                                 onTap: () {
+                                                  analytics.logEvent(
+                                                      name: 'View_Room',
+                                                      parameters: {
+                                                        'Category':
+                                                            categoryTextH,
+                                                      });
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
@@ -1609,8 +1622,16 @@ class LoginPage extends StatelessWidget {
                                   ],
                                 ),
                               ),
-                              onTap: () {
-                                analytics.logEvent(name: 'Update_denied');
+                              onTap: () async {
+                                await analytics.logEvent(
+                                    name: 'Update_denied',
+                                    parameters: {
+                                      'required': required.toString()
+                                    });
+                                if (required) {
+                                  if (Platform.isAndroid) SystemNavigator.pop();
+                                  if (Platform.isIOS) exit(0);
+                                }
                                 Navigator.pop(context);
                               },
                             ),

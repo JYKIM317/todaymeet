@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 String? selectedPlace;
 LocationPermission? permission;
@@ -246,6 +247,8 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
   bool gameState = selectedCategory.contains('게임') ? true : false;
   bool boardgameState = selectedCategory.contains('보드게임') ? true : false;
   bool etcState = selectedCategory.contains('기타') ? true : false;
+
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   final hour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   final minute = [00, 05, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
@@ -877,6 +880,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                       child: Text('확인',
                           style: TextStyle(color: Color(0xFF51CF6D))),
                       onPressed: () {
+                        analytics.logEvent(name: 'Create_BuildGroup_dismiss');
                         Navigator.of(context).pop(true);
                       })
                 ],
@@ -911,6 +915,8 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                               child: Text('확인',
                                   style: TextStyle(color: Color(0xFF51CF6D))),
                               onPressed: () {
+                                analytics.logEvent(
+                                    name: 'Create_BuildGroup_dismiss');
                                 Navigator.of(context).pop();
                                 Navigator.of(context).pop();
                               })
@@ -1519,6 +1525,8 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                     'read': 0,
                                     'recent': DateTime(2099, 1, 1, 1, 1),
                                   });
+                                  analytics.logEvent(
+                                      name: 'Create_BuildGroup_sucsess');
                                   progress?.dismiss();
                                   Navigator.pop(context);
                                 }
@@ -1606,6 +1614,8 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                   'read': 0,
                                   'recent': DateTime(2099, 1, 1, 1, 1),
                                 });
+                                analytics.logEvent(
+                                    name: 'Create_BuildGroup_sucsess');
                                 progress?.dismiss();
                                 Navigator.pop(context);
                               }
@@ -1699,6 +1709,8 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                     'read': 0,
                                     'recent': DateTime(2099, 1, 1, 1, 1),
                                   });
+                                  analytics.logEvent(
+                                      name: 'Create_BuildGroup_sucsess');
                                   progress?.dismiss();
                                   Navigator.pop(context);
                                 }
@@ -1786,6 +1798,8 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                   'read': 0,
                                   'recent': DateTime(2099, 1, 1, 1, 1),
                                 });
+                                analytics.logEvent(
+                                    name: 'Create_BuildGroup_sucsess');
                                 progress?.dismiss();
                                 Navigator.pop(context);
                               }
@@ -1873,6 +1887,8 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                 'read': 0,
                                 'recent': DateTime(2099, 1, 1, 1, 1),
                               });
+                              analytics.logEvent(
+                                  name: 'Create_BuildGroup_sucsess');
                               progress?.dismiss();
                               Navigator.pop(context);
                             }

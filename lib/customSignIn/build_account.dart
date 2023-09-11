@@ -7,10 +7,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:famet/main.dart' as main;
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
-User? _user = FirebaseAuth.instance.currentUser;
 File? _image;
 final _picker = ImagePicker();
+User? _user = FirebaseAuth.instance.currentUser;
 final _userinfo =
     FirebaseFirestore.instance.collection('users').doc(_user!.uid);
 final phoneNum = FirebaseAuth.instance.currentUser?.phoneNumber;
@@ -19,6 +20,7 @@ int? yearParameter, monthParameter, dayParameter, genderstate;
 double? mannerParameter = 50.0, attend = 0;
 bool photostate = false;
 List<String>? category = [];
+FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
 class _photobuild extends StatefulWidget {
   const _photobuild({Key? key}) : super(key: key);
@@ -27,6 +29,7 @@ class _photobuild extends StatefulWidget {
 }
 
 class _photobuildState extends State<_photobuild> {
+  var _user = FirebaseAuth.instance.currentUser;
   Future<void> _getImage() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -58,6 +61,9 @@ class _photobuildState extends State<_photobuild> {
 
   @override
   Widget build(BuildContext context) {
+    _user = FirebaseAuth.instance.currentUser;
+    final _userinfo =
+        FirebaseFirestore.instance.collection('users').doc(_user!.uid);
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.fromLTRB(26.w, 32.w, 26.w, 16.w),
@@ -193,6 +199,7 @@ class _photobuildState extends State<_photobuild> {
                       'pushToken': fcmToken,
                       'userGrade': 'common',
                     }).then((_) {
+                      analytics.logEvent(name: 'AccountBuild_Sucsess');
                       showDialog(
                           barrierDismissible: false,
                           context: context,
@@ -212,6 +219,11 @@ class _photobuildState extends State<_photobuild> {
                                             fontSize: 18.w,
                                           )),
                                       onPressed: () {
+                                        analytics.logEvent(
+                                            name: 'Build_Account_Photo',
+                                            parameters: {
+                                              'result': 'with_photo'
+                                            });
                                         Navigator.of(context).pop();
                                         Navigator.pushAndRemoveUntil(
                                           context,
@@ -286,6 +298,8 @@ class _photobuildState extends State<_photobuild> {
                                       'pushToken': fcmToken,
                                       'userGrade': 'common',
                                     }).then((_) {
+                                      analytics.logEvent(
+                                          name: 'Build_Account_Sucsess');
                                       showDialog(
                                           barrierDismissible: false,
                                           context: context,
@@ -308,6 +322,13 @@ class _photobuildState extends State<_photobuild> {
                                                             fontSize: 18.w,
                                                           )),
                                                       onPressed: () {
+                                                        analytics.logEvent(
+                                                            name:
+                                                                'Build_Account_Photo',
+                                                            parameters: {
+                                                              'result':
+                                                                  'without_photo'
+                                                            });
                                                         Navigator.of(context)
                                                             .pop();
                                                         Navigator
@@ -408,6 +429,9 @@ class _genderbuildState extends State<_genderbuild> {
                       ),
                       onTap: () {
                         genderParameter = '미설정';
+                        analytics.logEvent(
+                            name: 'Build_Account_Gender',
+                            parameters: {'result': 'next'});
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -520,6 +544,12 @@ class _genderbuildState extends State<_genderbuild> {
                                       style:
                                           TextStyle(color: Color(0xFF51CF6D))),
                                   onPressed: () {
+                                    analytics.logEvent(
+                                        name: 'Build_Account_Gender',
+                                        parameters: {
+                                          'result': 'sucsess',
+                                          'gender': genderParameter
+                                        });
                                     Navigator.of(context).pop();
                                     Navigator.push(
                                         context,
@@ -620,6 +650,9 @@ class __birthdaybuildState extends State<_birthdaybuild> {
                         yearParameter = 1111;
                         monthParameter = 1;
                         dayParameter = 1;
+                        analytics.logEvent(
+                            name: 'Build_Account_Birthday',
+                            parameters: {'result': 'next'});
                         Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -762,6 +795,9 @@ class __birthdaybuildState extends State<_birthdaybuild> {
                                         style: TextStyle(
                                             color: Color(0xFF51CF6D))),
                                     onPressed: () {
+                                      analytics.logEvent(
+                                          name: 'Build_Account_Birthday',
+                                          parameters: {'result': 'sucsess'});
                                       Navigator.of(context).pop();
                                       Navigator.push(
                                           context,
@@ -950,6 +986,7 @@ class _AccountBuildState extends State<AccountBuild> {
                             dataindex = dataindex + 1;
                           });
                           if (dataindex == 6) {
+                            analytics.logEvent(name: 'quitUser_Comeback');
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
@@ -1001,6 +1038,11 @@ class _AccountBuildState extends State<AccountBuild> {
                                               style: TextStyle(
                                                   color: Color(0xFF51CF6D))),
                                           onPressed: () {
+                                            analytics.logEvent(
+                                                name: 'Build_Account_Name',
+                                                parameters: {
+                                                  'result': 'sucsess'
+                                                });
                                             Navigator.pop(context);
                                             Navigator.push(
                                                 context,

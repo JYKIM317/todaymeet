@@ -331,6 +331,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: InkWell(
                       child: Container(
                         height: 48.w,
+                        width: 100.w,
                         alignment: Alignment.centerLeft,
                         padding: EdgeInsets.fromLTRB(0, 15.w, 0, 10.w),
                         child: Row(
@@ -383,6 +384,9 @@ class _ProfilePageState extends State<ProfilePage> {
                                 TextField(
                                   controller: introduceController,
                                   maxLines: null,
+                                  keyboardType: TextInputType.multiline,
+                                  scrollPadding: EdgeInsets.only(
+                                      bottom: MediaQuery.sizeOf(context).width),
                                 ),
                                 SizedBox(height: 6.w),
                                 Row(
@@ -431,6 +435,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: InkWell(
                       child: Container(
                           height: 48.w,
+                          width: 140.w,
                           alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(top: 15.w),
                           child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -484,6 +489,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: InkWell(
                       child: Container(
                         height: 48.w,
+                        width: 90.w,
                         alignment: Alignment.centerLeft,
                         padding: EdgeInsets.only(top: 15.w),
                         child: Row(

@@ -6,6 +6,7 @@ import 'package:famet/customProfile/people_Profile_View.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:famet/customProfile/review.screen.dart';
 import 'dart:math' as math;
+import 'package:firebase_analytics/firebase_analytics.dart';
 
 User? _user = FirebaseAuth.instance.currentUser;
 late DocumentReference _roominfoD;
@@ -19,6 +20,7 @@ class DoneRoomPage extends StatefulWidget {
 
 class _DoneRoomPageState extends State<DoneRoomPage> {
   List member = [], memberphoto = [];
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
   @override
   void initState() {
@@ -495,6 +497,7 @@ class _DoneRoomPageState extends State<DoneRoomPage> {
                               );
                             });
                       } else {
+                        analytics.logEvent(name: 'Review_Write');
                         Navigator.push(
                             context,
                             MaterialPageRoute(
