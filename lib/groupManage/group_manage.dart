@@ -385,7 +385,11 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                     60) {
                               final random = Random();
                               final String roomNum =
-                                  '${targetTime.year}${targetTime.month}${targetTime.day}_${random.nextInt(4294967296)}';
+                                  '${targetTime.year}${targetTime.month}${{
+                                        targetTime.day
+                                      }.length == 1 ? {'0${targetTime.day}'} : {
+                                      targetTime.day
+                                    }}_${random.nextInt(4294967296)}';
                               List absentMember = data['absent'];
                               for (int i = 1; i < headcount.length; i++) {
                                 FirebaseFirestore.instance
@@ -695,7 +699,13 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                             60) {
                                           final random = Random();
                                           final String roomNum =
-                                              '${targetTime.year}${targetTime.month}${targetTime.day}_${random.nextInt(4294967296)}';
+                                              '${targetTime.year}${targetTime.month}${{
+                                                    targetTime.day
+                                                  }.length == 1 ? {
+                                                  '0${targetTime.day}'
+                                                } : {
+                                                  targetTime.day
+                                                }}_${random.nextInt(4294967296)}';
                                           List absentMember = data['absent'];
                                           for (int i = 1;
                                               i < headcount.length;

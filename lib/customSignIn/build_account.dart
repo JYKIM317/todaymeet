@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:famet/main.dart' as main;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'termofservicelist.dart';
 
 File? _image;
 final _picker = ImagePicker();
@@ -151,7 +152,7 @@ class _photobuildState extends State<_photobuild> {
                 child: Container(
                   alignment: Alignment.topCenter,
                   width: double.infinity,
-                  height: 32.w,
+                  height: 42.w,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6.w),
                     color: Color(0xFF51CF6D),
@@ -490,7 +491,7 @@ class _genderbuildState extends State<_genderbuild> {
                 child: Container(
                   alignment: Alignment.topCenter,
                   width: double.infinity,
-                  height: 32.w,
+                  height: 42.w,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6.w),
                     color: Color(0xFF51CF6D),
@@ -726,7 +727,7 @@ class __birthdaybuildState extends State<_birthdaybuild> {
                 child: Container(
                   alignment: Alignment.topCenter,
                   width: double.infinity,
-                  height: 32.w,
+                  height: 42.w,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6.w),
                     color: Color(0xFF51CF6D),
@@ -840,6 +841,270 @@ class __birthdaybuildState extends State<_birthdaybuild> {
   }
 }
 
+class _namebuild extends StatefulWidget {
+  const _namebuild({super.key});
+
+  @override
+  State<_namebuild> createState() => __namebuildState();
+}
+
+class __namebuildState extends State<_namebuild> {
+  TextEditingController nameController = TextEditingController();
+  final List<String> blocknamelist = [
+    '오늘모임',
+    '운영자',
+    '시발',
+    'ㅅㅂ',
+    '병신',
+    'ㅂㅅ',
+    '장애인',
+    '새끼',
+  ];
+  @override
+  void initState() {
+    _user = FirebaseAuth.instance.currentUser;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    nameController.text = nameParameter ?? '';
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.fromLTRB(26.w, 32.w, 26.w, 16.w),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: 18.w),
+              Expanded(
+                flex: 2,
+                child: Center(
+                  child: Text(
+                    '이름을 설정해주세요',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 24.w,
+                    ),
+                  ),
+                ),
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: '이름',
+                  hintText: '2~6글자로 설정 가능합니다.',
+                ),
+                controller: nameController,
+              ),
+              Expanded(flex: 2, child: SizedBox()),
+              InkWell(
+                child: Container(
+                  alignment: Alignment.topCenter,
+                  width: double.infinity,
+                  height: 42.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6.w),
+                    color: Color(0xFF51CF6D),
+                  ),
+                  child: Center(
+                    child: Text(
+                      '다음',
+                      style: TextStyle(color: Colors.white, fontSize: 18.w),
+                    ),
+                  ),
+                ),
+                onTap: () async {
+                  final quitCheck = await FirebaseFirestore.instance
+                      .collection('quitUsers')
+                      .where('phonenumber', isEqualTo: phoneNum)
+                      .get();
+                  if (quitCheck.docs.isNotEmpty) {
+                    int dataindex = 0;
+                    final userCheck = quitCheck.docs.first.id;
+                    final quitUserCheck = await FirebaseFirestore.instance
+                        .collection('quitUsers')
+                        .doc(userCheck)
+                        .get();
+                    Map<String, dynamic>? quitUserData =
+                        quitUserCheck.data() as Map<String, dynamic>?;
+                    if (quitUserData != null) {
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(_user!.uid)
+                          .set(quitUserData);
+                      final List subCollectionList = [
+                        'chat',
+                        'done',
+                        'marketingInfo',
+                        'notification',
+                        'other',
+                        'review',
+                        'room'
+                      ];
+                      for (String collectionName in subCollectionList) {
+                        await FirebaseFirestore.instance
+                            .collection('quitUsers')
+                            .doc(userCheck)
+                            .collection(collectionName)
+                            .get()
+                            .then((collectionSnapshot) {
+                          for (DocumentSnapshot doc
+                              in collectionSnapshot.docs) {
+                            Map<String, dynamic> subCollectionData =
+                                doc.data() as Map<String, dynamic>;
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(_user!.uid)
+                                .collection(collectionName)
+                                .doc('${doc.id}')
+                                .set(subCollectionData);
+                            doc.reference.delete();
+                          }
+                          dataindex = dataindex + 1;
+                        });
+                        if (dataindex == 6) {
+                          analytics.logEvent(name: 'quitUser_Comeback');
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => main.LoginPage()),
+                            (route) => false,
+                          );
+                          FirebaseFirestore.instance
+                              .collection('quitUsers')
+                              .doc(userCheck)
+                              .delete();
+                        }
+                      }
+                    }
+                  }
+                  if (quitCheck.docs.isEmpty) {
+                    nameParameter = nameController.text;
+                    if (nameParameter!.length > 1 &&
+                        nameParameter!.length < 7) {
+                      if (!nameParameter!.contains(' ')) {
+                        bool badnameState = false;
+                        String badnamePar = '';
+                        for (String word in blocknamelist) {
+                          if (nameParameter!.contains(word)) {
+                            badnameState = true;
+                            badnamePar = word;
+                          }
+                        }
+                        if (!badnameState) {
+                          showDialog(
+                              barrierDismissible: true,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6.w)),
+                                  content: Text(
+                                      "이름은 한 번 설정하면 변경할 수 없습니다.\n설정하신 이름이 '$nameParameter' 맞습니까?"),
+                                  actions: [
+                                    TextButton(
+                                        child: Text('취소',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        }),
+                                    TextButton(
+                                        child: Text('확인',
+                                            style: TextStyle(
+                                                color: Color(0xFF51CF6D))),
+                                        onPressed: () {
+                                          analytics.logEvent(
+                                              name: 'Build_Account_Name',
+                                              parameters: {
+                                                'result': 'sucsess'
+                                              });
+                                          Navigator.pop(context);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          _birthdaybuild()));
+                                        })
+                                  ],
+                                );
+                              });
+                        } else if (badnameState) {
+                          showDialog(
+                              barrierDismissible: true,
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6.w)),
+                                  content: Text(
+                                      "이름에 부적절한 내용이 포함되어있습니다\n내용 : '$badnamePar'"),
+                                  actions: [
+                                    TextButton(
+                                        child: Text('뒤로가기',
+                                            style:
+                                                TextStyle(color: Colors.grey)),
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        }),
+                                  ],
+                                );
+                              });
+                        }
+                      } else {
+                        showDialog(
+                            barrierDismissible: true,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(6.w)),
+                                content: Text(
+                                    "이름에 공백이 들어갈 수 없습니다.\n입력하신 정보를 확인해주세요"),
+                                actions: [
+                                  TextButton(
+                                      child: Text('뒤로가기',
+                                          style: TextStyle(color: Colors.grey)),
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      }),
+                                ],
+                              );
+                            });
+                      }
+                    } else {
+                      showDialog(
+                          barrierDismissible: true,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6.w)),
+                              content: Text('닉네임은 2~6글자로 설정 가능합니다.'),
+                              actions: [
+                                TextButton(
+                                    child: Text('뒤로가기',
+                                        style: TextStyle(color: Colors.grey)),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    }),
+                              ],
+                            );
+                          });
+                    }
+                  }
+                },
+              ),
+              SizedBox(height: 10.w)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class AccountBuild extends StatefulWidget {
   const AccountBuild({Key? key}) : super(key: key);
   @override
@@ -848,7 +1113,7 @@ class AccountBuild extends StatefulWidget {
 
 class _AccountBuildState extends State<AccountBuild> {
   TextEditingController nameController = TextEditingController();
-  static final _formKey = GlobalKey<FormState>();
+  bool termone = false, termtwo = false;
   final List<String> blocknamelist = [
     '오늘모임',
     '운영자',
@@ -904,7 +1169,7 @@ class _AccountBuildState extends State<AccountBuild> {
                   flex: 2,
                   child: Center(
                     child: Text(
-                      '이름을 설정해주세요',
+                      '약관에 동의해주세요',
                       style: TextStyle(
                         fontWeight: FontWeight.w500,
                         fontSize: 24.w,
@@ -912,19 +1177,110 @@ class _AccountBuildState extends State<AccountBuild> {
                     ),
                   ),
                 ),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: '이름',
-                    hintText: '2~6글자로 설정 가능합니다.',
-                  ),
-                  controller: nameController,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(height: 24.w),
+                    Container(
+                        padding: EdgeInsets.fromLTRB(20, 10, 30, 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text('서비스 이용약관 동의',
+                                    style: TextStyle(fontSize: 14)),
+                                Text('(필수)',
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        color: Color(0xFFEF5350))),
+                                IconButton(
+                                  icon: Icon(Icons.keyboard_arrow_right),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                TermOfService()));
+                                  },
+                                )
+                              ],
+                            ),
+                            termone == true
+                                ? IconButton(
+                                    icon: Icon(Icons.check_box,
+                                        color: Color(0xFF51CF6D)),
+                                    onPressed: () {
+                                      setState(() {
+                                        termone = false;
+                                      });
+                                    },
+                                  )
+                                : IconButton(
+                                    icon: Icon(Icons.check_box_outline_blank,
+                                        color: Color(0xFF51CF6D)),
+                                    onPressed: () {
+                                      setState(() {
+                                        termone = true;
+                                      });
+                                    },
+                                  ),
+                          ],
+                        )),
+                    Container(
+                        padding: EdgeInsets.fromLTRB(20, 10, 30, 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Text('개인정보 수집 및 이용동의',
+                                    style: TextStyle(fontSize: 14)),
+                                Text('(필수)',
+                                    style: TextStyle(
+                                        fontSize: 10,
+                                        color: Color(0xFFEF5350))),
+                                IconButton(
+                                  icon: Icon(Icons.keyboard_arrow_right),
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                PrivacyPolicy()));
+                                  },
+                                )
+                              ],
+                            ),
+                            termtwo == true
+                                ? IconButton(
+                                    icon: Icon(Icons.check_box,
+                                        color: Color(0xFF51CF6D)),
+                                    onPressed: () {
+                                      setState(() {
+                                        termtwo = false;
+                                      });
+                                    },
+                                  )
+                                : IconButton(
+                                    icon: Icon(Icons.check_box_outline_blank,
+                                        color: Color(0xFF51CF6D)),
+                                    onPressed: () {
+                                      setState(() {
+                                        termtwo = true;
+                                      });
+                                    },
+                                  ),
+                          ],
+                        )),
+                  ],
                 ),
                 Expanded(flex: 2, child: SizedBox()),
                 InkWell(
                   child: Container(
                     alignment: Alignment.topCenter,
                     width: double.infinity,
-                    height: 32.w,
+                    height: 42.w,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(6.w),
                       color: Color(0xFF51CF6D),
@@ -937,188 +1293,32 @@ class _AccountBuildState extends State<AccountBuild> {
                     ),
                   ),
                   onTap: () async {
-                    final quitCheck = await FirebaseFirestore.instance
-                        .collection('quitUsers')
-                        .where('phonenumber', isEqualTo: phoneNum)
-                        .get();
-                    if (quitCheck.docs.isNotEmpty) {
-                      int dataindex = 0;
-                      final userCheck = quitCheck.docs.first.id;
-                      final quitUserCheck = await FirebaseFirestore.instance
-                          .collection('quitUsers')
-                          .doc(userCheck)
-                          .get();
-                      Map<String, dynamic>? quitUserData =
-                          quitUserCheck.data() as Map<String, dynamic>?;
-                      if (quitUserData != null) {
-                        FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(_user!.uid)
-                            .set(quitUserData);
-                        final List subCollectionList = [
-                          'chat',
-                          'done',
-                          'marketingInfo',
-                          'notification',
-                          'other',
-                          'review',
-                          'room'
-                        ];
-                        for (String collectionName in subCollectionList) {
-                          await FirebaseFirestore.instance
-                              .collection('quitUsers')
-                              .doc(userCheck)
-                              .collection(collectionName)
-                              .get()
-                              .then((collectionSnapshot) {
-                            for (DocumentSnapshot doc
-                                in collectionSnapshot.docs) {
-                              Map<String, dynamic> subCollectionData =
-                                  doc.data() as Map<String, dynamic>;
-                              FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(_user!.uid)
-                                  .collection(collectionName)
-                                  .doc('${doc.id}')
-                                  .set(subCollectionData);
-                              doc.reference.delete();
-                            }
-                            dataindex = dataindex + 1;
-                          });
-                          if (dataindex == 6) {
-                            analytics.logEvent(name: 'quitUser_Comeback');
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => main.LoginPage()),
-                              (route) => false,
+                    if (termone && termtwo) {
+                      analytics.logEvent(
+                        name: 'Build_Account_TermOfService',
+                      );
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => _namebuild()));
+                    } else {
+                      showDialog(
+                          barrierDismissible: true,
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Text('필수 이용약관에 동의하지 않았습니다.'),
+                              actions: <Widget>[
+                                TextButton(
+                                    child: Text('확인',
+                                        style: TextStyle(
+                                            color: Color(0xFF51CF6D))),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    }),
+                              ],
                             );
-                            FirebaseFirestore.instance
-                                .collection('quitUsers')
-                                .doc(userCheck)
-                                .delete();
-                          }
-                        }
-                      }
-                    }
-                    if (quitCheck.docs.isEmpty) {
-                      nameParameter = nameController.text;
-                      if (nameParameter!.length > 1 &&
-                          nameParameter!.length < 7) {
-                        if (!nameParameter!.contains(' ')) {
-                          bool badnameState = false;
-                          String badnamePar = '';
-                          for (String word in blocknamelist) {
-                            if (nameParameter!.contains(word)) {
-                              badnameState = true;
-                              badnamePar = word;
-                            }
-                          }
-                          if (!badnameState) {
-                            showDialog(
-                                barrierDismissible: true,
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(6.w)),
-                                    content: Text(
-                                        "이름은 한 번 설정하면 변경할 수 없습니다.\n설정하신 이름이 '$nameParameter' 맞습니까?"),
-                                    actions: [
-                                      TextButton(
-                                          child: Text('취소',
-                                              style: TextStyle(
-                                                  color: Colors.grey)),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          }),
-                                      TextButton(
-                                          child: Text('확인',
-                                              style: TextStyle(
-                                                  color: Color(0xFF51CF6D))),
-                                          onPressed: () {
-                                            analytics.logEvent(
-                                                name: 'Build_Account_Name',
-                                                parameters: {
-                                                  'result': 'sucsess'
-                                                });
-                                            Navigator.pop(context);
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (BuildContext
-                                                            context) =>
-                                                        _birthdaybuild()));
-                                          })
-                                    ],
-                                  );
-                                });
-                          } else if (badnameState) {
-                            showDialog(
-                                barrierDismissible: true,
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(6.w)),
-                                    content: Text(
-                                        "이름에 부적절한 내용이 포함되어있습니다\n내용 : '$badnamePar'"),
-                                    actions: [
-                                      TextButton(
-                                          child: Text('뒤로가기',
-                                              style: TextStyle(
-                                                  color: Colors.grey)),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          }),
-                                    ],
-                                  );
-                                });
-                          }
-                        } else {
-                          showDialog(
-                              barrierDismissible: true,
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(6.w)),
-                                  content: Text(
-                                      "이름에 공백이 들어갈 수 없습니다.\n입력하신 정보를 확인해주세요"),
-                                  actions: [
-                                    TextButton(
-                                        child: Text('뒤로가기',
-                                            style:
-                                                TextStyle(color: Colors.grey)),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        }),
-                                  ],
-                                );
-                              });
-                        }
-                      } else {
-                        showDialog(
-                            barrierDismissible: true,
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6.w)),
-                                content: Text('닉네임은 2~6글자로 설정 가능합니다.'),
-                                actions: [
-                                  TextButton(
-                                      child: Text('뒤로가기',
-                                          style: TextStyle(color: Colors.grey)),
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      }),
-                                ],
-                              );
-                            });
-                      }
+                          });
                     }
                   },
                 ),

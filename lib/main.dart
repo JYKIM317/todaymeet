@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:famet/firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -32,6 +33,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:yaml/yaml.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'groupManage/build_group.dart';
 
 var _user = FirebaseAuth.instance.currentUser;
 var _userinfo = FirebaseFirestore.instance.collection('users').doc(_user!.uid);
@@ -816,7 +818,7 @@ class _MyAppState extends State<MyApp> {
             ProfilePage()
           ][_selectedIndex],
           bottomNavigationBar: SizedBox(
-            height: 48.w,
+            height: 64.h,
             child: Theme(
               data: ThemeData(
                   splashColor: Colors.transparent,
@@ -846,10 +848,10 @@ class _MyAppState extends State<MyApp> {
                                   snapshot.data!.docs;
                               return newChat.isNotEmpty
                                   ? Transform.translate(
-                                      offset: Offset(15.w, 3.w),
+                                      offset: Offset(18.h, 4.h),
                                       child: CircleAvatar(
                                         backgroundColor: Color(0xFFFFA000),
-                                        radius: 4.w,
+                                        radius: 6.h,
                                       ))
                                   : SizedBox(height: 0);
                             },
@@ -869,8 +871,8 @@ class _MyAppState extends State<MyApp> {
                 backgroundColor: Color(0xFFB9F6CA),
                 selectedItemColor: Color(0xFF51CF6D),
                 unselectedFontSize: 0,
-                selectedFontSize: 10.w,
-                iconSize: 22.w,
+                selectedFontSize: 14.h,
+                iconSize: 24.h,
                 showUnselectedLabels: false,
                 selectedLabelStyle: TextStyle(fontFamily: 'Pretendard'),
               ),
@@ -924,6 +926,19 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     super.dispose();
+  }
+
+  roomMcheck() async {
+    late bool existMade;
+    final madeRoom = await _userinfo.collection('room').doc('made').get();
+    Map<String, dynamic>? data = madeRoom.data() as Map<String, dynamic>?;
+    if (data == null) {
+      existMade = false;
+    } else {
+      existMade = true;
+    }
+    print('this is debug existMade = $existMade');
+    return existMade;
   }
 
   marketingAgree() {
@@ -1065,6 +1080,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final progress = ProgressHUD.of(context);
     return RefreshIndicator(
       onRefresh: () async {
         setState(() {});
@@ -1077,12 +1093,51 @@ class _HomePageState extends State<HomePage> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 Container(
-                    child: Text(
-                      '혹시 이런 모임은 어떠신가요?',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 16.w),
+                    child: Row(
+                      children: [
+                        Text(
+                          '이런 모임은 어떠신가요?',
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16.w),
+                        ),
+                        TextButton(
+                            onPressed: () async {
+                              bool madeCheck;
+                              madeCheck = await roomMcheck();
+                              if (madeCheck) {
+                                showDialog(
+                                    barrierDismissible: true,
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(6.w)),
+                                        content: Text("모임은 한 개만 생성 가능합니다."),
+                                      );
+                                    });
+                              } else {
+                                progress?.show();
+                                analytics.logEvent(name: 'Create_BuildGroup');
+                                await Future.delayed(Duration(seconds: 1), () {
+                                  progress?.dismiss();
+                                });
+                                await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ProgressHUD(
+                                            child: BuildGroupPage())));
+                                setState(() {});
+                              }
+                            },
+                            child: Text(
+                              '모임 개설하기 +',
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12.w),
+                            )),
+                      ],
                     ),
                     height: 34.w,
                     width: double.infinity,

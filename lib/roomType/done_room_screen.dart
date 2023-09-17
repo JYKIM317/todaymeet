@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:famet/customProfile/people_Profile_View.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'package:famet/customProfile/review.screen.dart';
+import 'package:famet/customProfile/review_screen.dart';
 import 'dart:math' as math;
 import 'package:firebase_analytics/firebase_analytics.dart';
 

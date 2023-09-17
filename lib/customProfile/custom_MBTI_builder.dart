@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-final _user = FirebaseAuth.instance.currentUser;
-final _userinfo =
-    FirebaseFirestore.instance.collection('users').doc(_user!.uid);
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MBTIbuilder extends StatefulWidget {
   const MBTIbuilder({Key? key}) : super(key: key);
@@ -14,8 +11,16 @@ class MBTIbuilder extends StatefulWidget {
 }
 
 class _MBTIbuilderState extends State<MBTIbuilder> {
+  final _user = FirebaseAuth.instance.currentUser;
+  var _userinfo;
   bool? eiState, snState, tfState, jpState;
   String? eiParameter, snParameter, tfParameter, jpParameter, mbtiparameter;
+  @override
+  void initState() {
+    _userinfo = FirebaseFirestore.instance.collection('users').doc(_user!.uid);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -30,14 +35,14 @@ class _MBTIbuilderState extends State<MBTIbuilder> {
             style: ButtonStyle(
                 backgroundColor:
                     MaterialStateProperty.all<Color>(Color(0xFF51CF6D)))),
-        fontFamily: 'Cafe',
+        fontFamily: 'Pretendard',
         highlightColor: Colors.transparent,
         splashColor: Colors.transparent,
         hoverColor: Colors.transparent,
       ),
       home: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.fromLTRB(40, 20, 40, 20),
+          padding: EdgeInsets.fromLTRB(40, 20.w, 40, 20),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -656,7 +656,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ],
                                   ),
                                 ),
-                                onTap: () {
+                                onTap: () async {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(

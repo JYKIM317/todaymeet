@@ -3,8 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-final _user = FirebaseAuth.instance.currentUser;
-
 class MyCategory extends StatefulWidget {
   const MyCategory({Key? key}) : super(key: key);
   @override
@@ -12,6 +10,8 @@ class MyCategory extends StatefulWidget {
 }
 
 class _MyCategoryState extends State<MyCategory> {
+  final _user = FirebaseAuth.instance.currentUser;
+  var _userinfo;
   bool? seoulState = false,
       gyeonggiState = false,
       incheonState = false,
@@ -40,8 +40,11 @@ class _MyCategoryState extends State<MyCategory> {
       etcState = false;
   List<String> regionCategory = [], hobbyCategory = [];
 
-  final _userinfo =
-      FirebaseFirestore.instance.collection('users').doc(_user!.uid);
+  @override
+  void initState() {
+    _userinfo = FirebaseFirestore.instance.collection('users').doc(_user!.uid);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -638,58 +641,56 @@ class _MyCategoryState extends State<MyCategory> {
         ),
         bottomSheet: BottomAppBar(
           height: 52.w,
-          child: Expanded(
-            child: SizedBox(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: InkWell(
-                      child: Container(
-                        alignment: Alignment.center,
-                        color: Colors.transparent,
-                        child: Text(
-                          '취소',
-                          style: TextStyle(
-                            color: Color(0xFF51CF6D),
-                            fontSize: 24.w,
-                          ),
+          child: SizedBox(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: InkWell(
+                    child: Container(
+                      alignment: Alignment.center,
+                      color: Colors.transparent,
+                      child: Text(
+                        '취소',
+                        style: TextStyle(
+                          color: Color(0xFF51CF6D),
+                          fontSize: 24.w,
                         ),
                       ),
-                      onTap: () {
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: InkWell(
+                    child: Container(
+                      alignment: Alignment.center,
+                      color: Color(0xFF51CF6D),
+                      child: Text(
+                        '완료',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24.w,
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      if (regionCategory.length != 0 ||
+                          hobbyCategory.length != 0) {
+                        _userinfo.update({
+                          'regioncategory': regionCategory,
+                          'hobbycategory': hobbyCategory,
+                        });
                         Navigator.pop(context);
-                      },
-                    ),
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
                   ),
-                  Expanded(
-                    child: InkWell(
-                      child: Container(
-                        alignment: Alignment.center,
-                        color: Color(0xFF51CF6D),
-                        child: Text(
-                          '완료',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24.w,
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        if (regionCategory.length != 0 ||
-                            hobbyCategory.length != 0) {
-                          _userinfo.update({
-                            'regioncategory': regionCategory,
-                            'hobbycategory': hobbyCategory,
-                          });
-                          Navigator.pop(context);
-                        } else {
-                          Navigator.pop(context);
-                        }
-                      },
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

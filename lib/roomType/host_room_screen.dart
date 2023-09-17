@@ -813,9 +813,7 @@ class _HostRoomPageState extends State<HostRoomPage> {
                                         ),
                                         onTap: () async {
                                           await sendMessage(
-                                              userToken: [
-                                                memberToken[index + 1]
-                                              ],
+                                              userToken: [memberToken[index]],
                                               title: '오늘모임',
                                               body: '진행중인 모임에서 출석 인정을 받으셨습니다.');
                                           absentMember.removeAt(index);
