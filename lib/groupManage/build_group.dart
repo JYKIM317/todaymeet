@@ -1523,7 +1523,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                       .doc(chatRoomName)
                                       .set({
                                     'read': 0,
-                                    'recent': DateTime(2099, 1, 1, 1, 1),
+                                    'recent': DateTime.now(),
                                   });
                                   analytics.logEvent(
                                       name: 'Create_BuildGroup_sucsess');
@@ -1612,7 +1612,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                     .doc(chatRoomName)
                                     .set({
                                   'read': 0,
-                                  'recent': DateTime(2099, 1, 1, 1, 1),
+                                  'recent': DateTime.now(),
                                 });
                                 analytics.logEvent(
                                     name: 'Create_BuildGroup_sucsess');
@@ -1707,7 +1707,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                       .doc(chatRoomName)
                                       .set({
                                     'read': 0,
-                                    'recent': DateTime(2099, 1, 1, 1, 1),
+                                    'recent': DateTime.now(),
                                   });
                                   analytics.logEvent(
                                       name: 'Create_BuildGroup_sucsess');
@@ -1796,7 +1796,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                     .doc(chatRoomName)
                                     .set({
                                   'read': 0,
-                                  'recent': DateTime(2099, 1, 1, 1, 1),
+                                  'recent': DateTime.now(),
                                 });
                                 analytics.logEvent(
                                     name: 'Create_BuildGroup_sucsess');
@@ -1885,7 +1885,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                   .doc(chatRoomName)
                                   .set({
                                 'read': 0,
-                                'recent': DateTime(2099, 1, 1, 1, 1),
+                                'recent': DateTime.now(),
                               });
                               analytics.logEvent(
                                   name: 'Create_BuildGroup_sucsess');

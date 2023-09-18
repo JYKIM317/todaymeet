@@ -329,7 +329,7 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                                                                 constraints:
                                                                     BoxConstraints(
                                                                         maxWidth:
-                                                                            161.w),
+                                                                            157.w),
                                                                 child: Text(
                                                                     data['member'][0] !=
                                                                             _user!
@@ -353,15 +353,7 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                                                               ),
                                                               SizedBox(
                                                                   width: 4.w),
-                                                              if (read == 1)
-                                                                CircleAvatar(
-                                                                  backgroundColor:
-                                                                      Color(
-                                                                          0xFFFFA000),
-                                                                  radius: 4.w,
-                                                                ),
-                                                              data['isGroup'] ==
-                                                                      true
+                                                              data['isGroup']
                                                                   ? Container(
                                                                       width:
                                                                           15.w,
@@ -390,6 +382,17 @@ class _ChatRoomViewState extends State<ChatRoomView> {
                                                                   : SizedBox(
                                                                       height:
                                                                           0),
+                                                              if (data[
+                                                                  'isGroup'])
+                                                                SizedBox(
+                                                                    width: 4.w),
+                                                              if (read == 1)
+                                                                CircleAvatar(
+                                                                  backgroundColor:
+                                                                      Color(
+                                                                          0xFFFFA000),
+                                                                  radius: 4.w,
+                                                                ),
                                                             ],
                                                           ),
                                                           SizedBox(height: 8.w),

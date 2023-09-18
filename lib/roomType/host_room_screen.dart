@@ -786,7 +786,8 @@ class _HostRoomPageState extends State<HostRoomPage> {
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   OtherProfile(
-                                                      user: member[index])));
+                                                      user: absentMember[
+                                                          index])));
                                     },
                                   ),
                                   Row(
@@ -813,7 +814,10 @@ class _HostRoomPageState extends State<HostRoomPage> {
                                         ),
                                         onTap: () async {
                                           await sendMessage(
-                                              userToken: [memberToken[index]],
+                                              userToken: [
+                                                memberToken[member.indexOf(
+                                                    absentMember[index])]
+                                              ],
                                               title: '오늘모임',
                                               body: '진행중인 모임에서 출석 인정을 받으셨습니다.');
                                           absentMember.removeAt(index);

@@ -464,9 +464,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _onBottomTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (_selectedIndex != index) {
+      if (index == 4) {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => ProfilePage()));
+      } else {
+        setState(() {
+          _selectedIndex = index;
+        });
+      }
+    }
   }
 
   String _authStatus = 'Unknown';

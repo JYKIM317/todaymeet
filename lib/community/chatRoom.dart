@@ -658,6 +658,16 @@ class _ChattingState extends State<Chatting> {
                       'newestMessage': textData.replaceAll('\n', ' '),
                     });
                     if (isGroup) {
+                      for (String member in members) {
+                        if (member != _user!.uid) {
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(member)
+                              .collection('chat')
+                              .doc(widget.chatAdress)
+                              .set({'recent': DateTime.now(), 'read': 1});
+                        }
+                      }
                       if (chatCount % 25 == 0 || chatCount == 1) {
                         chatRoom.doc('message_${DateTime.now()}_system').set({
                           'sendTime': DateTime.now(),

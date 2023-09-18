@@ -386,7 +386,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                   maxLines: null,
                                   keyboardType: TextInputType.multiline,
                                   scrollPadding: EdgeInsets.only(
-                                      bottom: MediaQuery.sizeOf(context).width),
+                                      bottom: (MediaQuery.sizeOf(context)
+                                                  .height /
+                                              2) -
+                                          (MediaQuery.sizeOf(context).height /
+                                              3)),
                                 ),
                                 SizedBox(height: 6.w),
                                 Row(
@@ -715,226 +719,232 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      physics: BouncingScrollPhysics(),
-      child: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.fromLTRB(20.w, 16.w, 20.w, 10.w),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  height: 14.w,
-                  width: double.infinity,
-                ),
-                _buildUserInfo(),
-                SizedBox(
-                  height: 24.w,
-                ),
-              ],
+    return Scaffold(
+      body: SingleChildScrollView(
+        physics: BouncingScrollPhysics(),
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(20.w, 16.w, 20.w, 10.w),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: 14.w,
+                    width: double.infinity,
+                  ),
+                  _buildUserInfo(),
+                  SizedBox(
+                    height: 24.w,
+                  ),
+                ],
+              ),
             ),
-          ),
-          Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-              color: Colors.grey.withOpacity(0.5),
-              width: 2.w,
-            ))),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(20.w, 16.w, 20.w, 10.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 0,
-                  width: double.infinity,
-                ),
-                Row(
-                  children: [
-                    InkWell(
-                      child: SizedBox(
-                        width: 100.w,
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.settings_outlined,
-                              size: 20.w,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(width: 4.w),
-                            Text(
-                              '설정',
-                              style: TextStyle(fontSize: 14.w),
-                            ),
-                          ],
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => setting.Setting()));
-                      },
-                    ),
-                    SizedBox(width: 40.w),
-                    InkWell(
-                      child: SizedBox(
-                        width: 120.w,
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.person_off,
-                              size: 20.w,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(width: 4.w),
-                            Text(
-                              '차단회원 관리',
-                              style: TextStyle(fontSize: 14.w),
-                            ),
-                          ],
-                        ),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => BlockManage()));
-                      },
-                    ),
-                  ],
-                ),
-                SizedBox(height: 14.w),
-                InkWell(
-                  child: SizedBox(
-                    width: 100.w,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.campaign_outlined,
-                          size: 20.w,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          '공지사항',
-                          style: TextStyle(fontSize: 14.w),
-                        ),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => NoticeView()));
-                  },
-                ),
-                SizedBox(height: 14.w),
-                InkWell(
-                  child: SizedBox(
-                    width: 100.w,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.receipt_long_outlined,
-                          size: 20.w,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          '이용약관',
-                          style: TextStyle(fontSize: 14.w),
-                        ),
-                      ],
-                    ),
-                  ),
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => ToSView()));
-                  },
-                ),
-                SizedBox(height: 14.w),
-                InkWell(
-                  child: SizedBox(
-                    width: 100.w,
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.help_outline,
-                          size: 20.w,
-                          color: Colors.grey,
-                        ),
-                        SizedBox(width: 4.w),
-                        Text(
-                          '문의하기',
-                          style: TextStyle(fontSize: 14.w),
-                        ),
-                      ],
-                    ),
-                  ),
-                  onTap: () async {
-                    final Email email = Email(
-                      recipients: ['delivalue100@gmail.com'],
-                      subject: '페멧 서비스 문의',
-                      body: '사용자 : ${_user!.uid}\n\n내용:',
-                    );
-                    try {
-                      await FlutterEmailSender.send(email);
-                    } catch (error) {
-                      showDialog(
-                          barrierDismissible: true,
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(6.w)),
-                                content: Container(
-                                  padding:
-                                      EdgeInsets.fromLTRB(6.w, 8.w, 6.w, 8.w),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                          '휴대폰 내의 메일 앱을 이용할 수 없어 앱에서 문의가 어렵습니다.\n'),
-                                      Text('아래 이메일로 연락주시면\n빠른 시일내에 답장드리겠습니다!'),
-                                      SizedBox(height: 24.h),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'delivalue100@gmail.com',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                          SizedBox(width: 4.w),
-                                          IconButton(
-                                              onPressed: () {
-                                                Clipboard.setData(ClipboardData(
-                                                    text:
-                                                        'delivalue100@gmail.com'));
-                                              },
-                                              icon: Icon(Icons.content_copy,
-                                                  color: Colors.grey,
-                                                  size: 22.w))
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ));
-                          });
-                    }
-                  },
-                ),
-              ],
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                color: Colors.grey.withOpacity(0.5),
+                width: 2.w,
+              ))),
             ),
-          ),
-          SizedBox(height: 14.w),
-        ],
+            Padding(
+              padding: EdgeInsets.fromLTRB(20.w, 16.w, 20.w, 10.w),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 0,
+                    width: double.infinity,
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                        child: SizedBox(
+                          width: 100.w,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.settings_outlined,
+                                size: 20.w,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                '설정',
+                                style: TextStyle(fontSize: 14.w),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => setting.Setting()));
+                        },
+                      ),
+                      SizedBox(width: 40.w),
+                      InkWell(
+                        child: SizedBox(
+                          width: 120.w,
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.person_off,
+                                size: 20.w,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                '차단회원 관리',
+                                style: TextStyle(fontSize: 14.w),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => BlockManage()));
+                        },
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 14.w),
+                  InkWell(
+                    child: SizedBox(
+                      width: 100.w,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.campaign_outlined,
+                            size: 20.w,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            '공지사항',
+                            style: TextStyle(fontSize: 14.w),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => NoticeView()));
+                    },
+                  ),
+                  SizedBox(height: 14.w),
+                  InkWell(
+                    child: SizedBox(
+                      width: 100.w,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.receipt_long_outlined,
+                            size: 20.w,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            '이용약관',
+                            style: TextStyle(fontSize: 14.w),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => ToSView()));
+                    },
+                  ),
+                  SizedBox(height: 14.w),
+                  InkWell(
+                    child: SizedBox(
+                      width: 100.w,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.help_outline,
+                            size: 20.w,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(width: 4.w),
+                          Text(
+                            '문의하기',
+                            style: TextStyle(fontSize: 14.w),
+                          ),
+                        ],
+                      ),
+                    ),
+                    onTap: () async {
+                      final Email email = Email(
+                        recipients: ['delivalue100@gmail.com'],
+                        subject: '페멧 서비스 문의',
+                        body: '사용자 : ${_user!.uid}\n\n내용:',
+                      );
+                      try {
+                        await FlutterEmailSender.send(email);
+                      } catch (error) {
+                        showDialog(
+                            barrierDismissible: true,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(6.w)),
+                                  content: Container(
+                                    padding:
+                                        EdgeInsets.fromLTRB(6.w, 8.w, 6.w, 8.w),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                            '휴대폰 내의 메일 앱을 이용할 수 없어 앱에서 문의가 어렵습니다.\n'),
+                                        Text(
+                                            '아래 이메일로 연락주시면\n빠른 시일내에 답장드리겠습니다!'),
+                                        SizedBox(height: 24.h),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              'delivalue100@gmail.com',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w700),
+                                            ),
+                                            SizedBox(width: 4.w),
+                                            IconButton(
+                                                onPressed: () {
+                                                  Clipboard.setData(ClipboardData(
+                                                      text:
+                                                          'delivalue100@gmail.com'));
+                                                },
+                                                icon: Icon(Icons.content_copy,
+                                                    color: Colors.grey,
+                                                    size: 22.w))
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ));
+                            });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 14.w),
+          ],
+        ),
       ),
     );
   }
