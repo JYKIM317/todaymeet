@@ -36,29 +36,6 @@ List<String> selectedCategory = [];
 List<dynamic> requestUID = [];
 TextEditingController titleController = TextEditingController();
 TextEditingController infoController = TextEditingController();
-String? titleParameter, infoParameter;
-late String selectedNoon;
-bool today = false,
-    tomorrow = false,
-    dat = false,
-    inprogress = false,
-    shown = true;
-int? d_Year = today
-    ? d_Year = DateTime.now().year
-    : tomorrow
-        ? d_Year = DateTime.now().add(Duration(days: 1)).year
-        : d_Year = DateTime.now().add(Duration(days: 2)).year;
-int? d_Month = today
-    ? d_Month = DateTime.now().month
-    : tomorrow
-        ? d_Month = DateTime.now().add(Duration(days: 1)).month
-        : d_Month = DateTime.now().add(Duration(days: 2)).month;
-int? d_Day = today
-    ? d_Day = DateTime.now().day
-    : tomorrow
-        ? d_Day = DateTime.now().add(Duration(days: 1)).day
-        : d_Day = DateTime.now().add(Duration(days: 2)).day;
-int? selectedHour, selectedMinute, selectedPeople;
 BottomDrawerController categoryController = BottomDrawerController();
 
 class MapView extends StatefulWidget {
@@ -249,6 +226,15 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
   bool etcState = selectedCategory.contains('기타') ? true : false;
 
   FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  int? d_Day, d_Month, d_Year;
+  String? titleParameter, infoParameter;
+  late String selectedNoon;
+  bool today = false,
+      tomorrow = false,
+      dat = false,
+      inprogress = false,
+      shown = true;
+  int? selectedHour, selectedMinute, selectedPeople;
 
   final hour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   final minute = [00, 05, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
@@ -1111,6 +1097,9 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                             today = true;
                                             tomorrow = false;
                                             dat = false;
+                                            d_Day = DateTime.now().day;
+                                            d_Month = DateTime.now().month;
+                                            d_Year = DateTime.now().year;
                                           });
                                         },
                                         child: Text('오늘',
@@ -1127,6 +1116,15 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                             today = false;
                                             tomorrow = true;
                                             dat = false;
+                                            d_Day = DateTime.now()
+                                                .add(Duration(days: 1))
+                                                .day;
+                                            d_Month = DateTime.now()
+                                                .add(Duration(days: 1))
+                                                .month;
+                                            d_Year = DateTime.now()
+                                                .add(Duration(days: 1))
+                                                .year;
                                           });
                                         },
                                         child: Text('내일',
@@ -1143,6 +1141,15 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                                             today = false;
                                             tomorrow = false;
                                             dat = true;
+                                            d_Day = DateTime.now()
+                                                .add(Duration(days: 2))
+                                                .day;
+                                            d_Month = DateTime.now()
+                                                .add(Duration(days: 2))
+                                                .month;
+                                            d_Year = DateTime.now()
+                                                .add(Duration(days: 2))
+                                                .year;
                                           });
                                         },
                                         child: Text('모레',
@@ -1407,7 +1414,7 @@ class _BuildGroupPageState extends State<BuildGroupPage> {
                         onTap: () async {
                           if (_interstitialAd != null) _interstitialAd?.show();
                           final String chatRoomName =
-                              '${DateTime.now().month.toString()}${DateTime.now().day.toString()}${DateTime.now().hour.toString()}${DateTime.now().minute.toString()}_${_user!.uid}';
+                              '${'${DateTime.now().month}'.length == 1 ? '0${DateTime.now().month}' : DateTime.now().month}${'${DateTime.now().day}'.length == 1 ? '0${DateTime.now().day}' : DateTime.now().day}${'${DateTime.now().hour}'.length == 1 ? '0${DateTime.now().hour}' : DateTime.now().hour}${'${DateTime.now().minute}'.length == 1 ? '0${DateTime.now().minute}' : DateTime.now().minute}_${_user!.uid}';
                           List<dynamic> responseUserData = await getUserData();
                           String hostUID = _user!.uid;
                           List<dynamic> memberUID = [hostUID];

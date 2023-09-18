@@ -259,11 +259,14 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                 ConnectionState.waiting) return Text('');
                             Map<String, dynamic>? data =
                                 snapshot.data?.data() as Map<String, dynamic>?;
-                            data == null
-                                ? roomStateM = false
-                                : roomStateM = true;
+
+                            if (data == null || snapshot.data == null) {
+                              roomStateM = false;
+                              return SizedBox(height: 0);
+                            } else {
+                              roomStateM = true;
+                            }
                             String? categoryTextH;
-                            if (data == null) return SizedBox(height: 0);
                             List<dynamic> headcount = data['memberUID'] ?? [];
                             categoryTextH = data['Categories'].join('  ');
                             final targetTime = DateTime(
@@ -284,6 +287,7 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                     : data['targetMinute'] as int);
                             if (targetTime.isBefore(DateTime.now()) &&
                                 headcount.length == 1) {
+                              roomStateM = false;
                               FirebaseFirestore.instance
                                   .collection('users')
                                   .doc(_user!.uid)
@@ -385,12 +389,9 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                     60) {
                               final random = Random();
                               final String roomNum =
-                                  '${targetTime.year}${targetTime.month}${{
-                                        targetTime.day
-                                      }.length == 1 ? {'0${targetTime.day}'} : {
-                                      targetTime.day
-                                    }}_${random.nextInt(4294967296)}';
+                                  '${targetTime.year}${'${targetTime.month}'.length == 1 ? '0${targetTime.month}' : targetTime.month}${'${targetTime.day}'.length == 1 ? '0${targetTime.day}' : targetTime.day}_${random.nextInt(4294967296)}';
                               List absentMember = data['absent'];
+                              roomStateM = false;
                               for (int i = 1; i < headcount.length; i++) {
                                 FirebaseFirestore.instance
                                     .collection('users')
@@ -699,14 +700,9 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                             60) {
                                           final random = Random();
                                           final String roomNum =
-                                              '${targetTime.year}${targetTime.month}${{
-                                                    targetTime.day
-                                                  }.length == 1 ? {
-                                                  '0${targetTime.day}'
-                                                } : {
-                                                  targetTime.day
-                                                }}_${random.nextInt(4294967296)}';
+                                              '${targetTime.year}${'${targetTime.month}'.length == 1 ? '0${targetTime.month}' : targetTime.month}${'${targetTime.day}'.length == 1 ? '0${targetTime.day}' : targetTime.day}_${random.nextInt(4294967296)}';
                                           List absentMember = data['absent'];
+                                          roomStateI = false;
                                           for (int i = 1;
                                               i < headcount.length;
                                               i++) {
@@ -1320,8 +1316,8 @@ class _GroupManagePageState extends State<GroupManagePage> {
                                   fontSize: 16.w,
                                 ))),
                         SizedBox(height: 16.w),
-                        StreamBuilder<DocumentSnapshot>(
-                          stream: _roominfoA.snapshots(),
+                        FutureBuilder<DocumentSnapshot>(
+                          future: _roominfoA.get(),
                           builder: (BuildContext context,
                               AsyncSnapshot<DocumentSnapshot> snapshot) {
                             if (snapshot.hasError) return Text('오류가 발생했습니다.');
@@ -1330,264 +1326,233 @@ class _GroupManagePageState extends State<GroupManagePage> {
                             Map<String, dynamic>? data =
                                 snapshot.data?.data() as Map<String, dynamic>?;
                             List<dynamic> attention = data?['attention'] ?? [];
-                            return attention.isNotEmpty
-                                ? ListView.separated(
-                                    physics: BouncingScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount: attention.length,
-                                    itemBuilder: (BuildContext ctx, int idx) {
-                                      return FutureBuilder<DocumentSnapshot?>(
-                                        future: _activeRoom
-                                            .doc('${attention[idx]}')
-                                            .get(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot<DocumentSnapshot?>
-                                                snapshot) {
-                                          String? categoryTextH;
-                                          if (snapshot.hasError)
-                                            return Text('오류가 발생했습니다.');
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting)
-                                            return Text('');
-                                          Map<String, dynamic>? data =
-                                              snapshot.data?.data()
-                                                  as Map<String, dynamic>?;
-                                          if (snapshot.data == null ||
-                                              data == null) {
-                                            attention.removeAt(idx);
-                                            _roominfoA.set({
-                                              'attention': attention,
-                                            });
-                                            return SizedBox(height: 0);
-                                          }
-                                          List<dynamic> headcount =
-                                              data['memberUID'] ?? [];
-                                          categoryTextH =
-                                              data['Categories'].join('  ');
-                                          return Container(
-                                            height: 94.w,
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    color: Colors.grey,
-                                                    width: 1)),
-                                            child: Padding(
-                                              padding: EdgeInsets.all(8.w),
+                            if (attention.isEmpty) {
+                              return SizedBox(
+                                height: 52.w,
+                                child: Text(
+                                  ' 관심 등록한 모임이 없습니다.',
+                                  style: TextStyle(
+                                    fontSize: 22.w,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              );
+                            }
+                            return ListView.separated(
+                              physics: BouncingScrollPhysics(),
+                              shrinkWrap: true,
+                              itemCount: attention.length,
+                              itemBuilder: (BuildContext ctx, int idx) {
+                                return StreamBuilder<DocumentSnapshot?>(
+                                  stream: _activeRoom
+                                      .doc('${attention[idx]}')
+                                      .snapshots(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<DocumentSnapshot?>
+                                          snapshot) {
+                                    String? categoryTextH;
+                                    if (snapshot.hasError)
+                                      return Text('오류가 발생했습니다.');
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting)
+                                      return Text('');
+                                    Map<String, dynamic>? data = snapshot.data
+                                        ?.data() as Map<String, dynamic>?;
+                                    if (snapshot.data == null || data == null) {
+                                      attention.removeAt(idx);
+                                      _roominfoA.set({
+                                        'attention': attention,
+                                      });
+                                      return SizedBox(height: 0);
+                                    }
+                                    List<dynamic> headcount =
+                                        data['memberUID'] ?? [];
+                                    categoryTextH =
+                                        data['Categories'].join('  ');
+                                    return Container(
+                                      height: 94.w,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Colors.grey, width: 1)),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(8.w),
+                                        child: Row(
+                                          children: [
+                                            InkWell(
                                               child: Row(
                                                 children: [
-                                                  InkWell(
-                                                    child: Row(
+                                                  SizedBox(
+                                                    width: 70.w,
+                                                    child: Stack(
                                                       children: [
-                                                        SizedBox(
-                                                          width: 70.w,
-                                                          child: Stack(
-                                                            children: [
-                                                              CircleAvatar(
-                                                                backgroundColor:
-                                                                    Colors.grey,
-                                                                radius: 32.w,
-                                                                backgroundImage:
-                                                                    NetworkImage(
-                                                                        '${data['hostPhotoUrl']}'),
-                                                              ),
-                                                              if (headcount
-                                                                      .length >=
-                                                                  2)
-                                                                Transform
-                                                                    .translate(
-                                                                  offset: headcount
-                                                                              .length ==
-                                                                          2
-                                                                      ? Offset(
-                                                                          35.w,
-                                                                          35.w)
-                                                                      : Offset(
-                                                                          25.w,
-                                                                          35.w),
-                                                                  child:
-                                                                      CircleAvatar(
-                                                                    backgroundColor:
-                                                                        Colors
-                                                                            .grey,
-                                                                    radius:
-                                                                        18.w,
-                                                                    backgroundImage:
-                                                                        NetworkImage(
-                                                                            '${data['memberPhotoUrl'][0]}'),
-                                                                  ),
-                                                                ),
-                                                              if (headcount
-                                                                      .length >=
-                                                                  3)
-                                                                Transform
-                                                                    .translate(
-                                                                  offset:
-                                                                      Offset(
-                                                                          35.w,
-                                                                          35.w),
-                                                                  child:
-                                                                      CircleAvatar(
-                                                                    backgroundColor: Colors
-                                                                        .white
-                                                                        .withOpacity(
-                                                                            0.8),
-                                                                    radius:
-                                                                        18.w,
-                                                                    child:
-                                                                        Center(
-                                                                      child:
-                                                                          Text(
-                                                                        '+${headcount.length - 2}',
-                                                                        style:
-                                                                            TextStyle(
-                                                                          color:
-                                                                              Colors.black,
-                                                                          fontSize:
-                                                                              12.w,
-                                                                          fontWeight:
-                                                                              FontWeight.w700,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                ),
-                                                            ],
-                                                          ),
+                                                        CircleAvatar(
+                                                          backgroundColor:
+                                                              Colors.grey,
+                                                          radius: 32.w,
+                                                          backgroundImage:
+                                                              NetworkImage(
+                                                                  '${data['hostPhotoUrl']}'),
                                                         ),
-                                                        SizedBox(width: 6.w),
-                                                        SizedBox(
-                                                          width: 210.w,
-                                                          child: Column(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .center,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Text(
-                                                                  '${data['title']}',
-                                                                  maxLines: 1,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  softWrap:
-                                                                      false,
+                                                        if (headcount.length >=
+                                                            2)
+                                                          Transform.translate(
+                                                            offset: headcount
+                                                                        .length ==
+                                                                    2
+                                                                ? Offset(
+                                                                    35.w, 35.w)
+                                                                : Offset(
+                                                                    25.w, 35.w),
+                                                            child: CircleAvatar(
+                                                              backgroundColor:
+                                                                  Colors.grey,
+                                                              radius: 18.w,
+                                                              backgroundImage:
+                                                                  NetworkImage(
+                                                                      '${data['memberPhotoUrl'][0]}'),
+                                                            ),
+                                                          ),
+                                                        if (headcount.length >=
+                                                            3)
+                                                          Transform.translate(
+                                                            offset: Offset(
+                                                                35.w, 35.w),
+                                                            child: CircleAvatar(
+                                                              backgroundColor:
+                                                                  Colors.white
+                                                                      .withOpacity(
+                                                                          0.8),
+                                                              radius: 18.w,
+                                                              child: Center(
+                                                                child: Text(
+                                                                  '+${headcount.length - 2}',
                                                                   style:
                                                                       TextStyle(
+                                                                    color: Colors
+                                                                        .black,
+                                                                    fontSize:
+                                                                        12.w,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .w700,
-                                                                    fontSize:
-                                                                        12.w,
-                                                                  )),
-                                                              SizedBox(
-                                                                  height: 2.w),
-                                                              Text(
-                                                                  '장소: ${data['place']}',
-                                                                  style: TextStyle(
-                                                                      fontSize:
-                                                                          10.w)),
-                                                              Row(
-                                                                mainAxisAlignment:
-                                                                    MainAxisAlignment
-                                                                        .spaceBetween,
-                                                                children: [
-                                                                  Text(
-                                                                      '약속시간: ${data['targetMonth']}월${data['targetDay']}일 ${data['targetHour']}:${data['targetMinute'] == 0 ? '00' : data['targetMinute']}',
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              10.w)),
-                                                                  Text(
-                                                                      '인원:${headcount.length}/${data['headcount']}',
-                                                                      style: TextStyle(
-                                                                          fontSize:
-                                                                              10.w))
-                                                                ],
+                                                                  ),
+                                                                ),
                                                               ),
-                                                              Text(
-                                                                '$categoryTextH',
-                                                                maxLines: 1,
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis,
-                                                                softWrap: false,
-                                                                style: TextStyle(
-                                                                    fontSize:
-                                                                        10.w),
-                                                              ),
-                                                              SizedBox(
-                                                                  height: 3.w),
-                                                              Text('눌러서 자세히 보기',
-                                                                  style: TextStyle(
-                                                                      color: Colors
-                                                                          .grey,
-                                                                      fontSize:
-                                                                          10.w))
-                                                            ],
+                                                            ),
                                                           ),
-                                                        ),
                                                       ],
                                                     ),
-                                                    onTap: () async {
-                                                      await Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  MemberRoomPage(
-                                                                    host:
-                                                                        attention[
-                                                                            idx],
-                                                                    inProgress:
-                                                                        false,
-                                                                  )) //모임 자세히보기
-                                                          );
-                                                      setState(() {});
-                                                    },
                                                   ),
-                                                  SizedBox(width: 4.w),
-                                                  Container(
-                                                    width: 14.w,
-                                                    alignment:
-                                                        Alignment.bottomCenter,
-                                                    child: InkWell(
-                                                        child: Icon(
-                                                          Icons.favorite,
-                                                          color:
-                                                              Color(0xFFEF5350),
-                                                          size: 16.w,
+                                                  SizedBox(width: 6.w),
+                                                  SizedBox(
+                                                    width: 210.w,
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text('${data['title']}',
+                                                            maxLines: 1,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            softWrap: false,
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              fontSize: 12.w,
+                                                            )),
+                                                        SizedBox(height: 2.w),
+                                                        Text(
+                                                            '장소: ${data['place']}',
+                                                            style: TextStyle(
+                                                                fontSize:
+                                                                    10.w)),
+                                                        Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Text(
+                                                                '약속시간: ${data['targetMonth']}월${data['targetDay']}일 ${data['targetHour']}:${data['targetMinute'] == 0 ? '00' : data['targetMinute']}',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        10.w)),
+                                                            Text(
+                                                                '인원:${headcount.length}/${data['headcount']}',
+                                                                style: TextStyle(
+                                                                    fontSize:
+                                                                        10.w))
+                                                          ],
                                                         ),
-                                                        onTap: () async {
-                                                          attention
-                                                              .removeAt(idx);
-                                                          await _roominfoA.set({
-                                                            'attention':
-                                                                attention,
-                                                          });
-                                                          setState(() {});
-                                                        }),
+                                                        Text(
+                                                          '$categoryTextH',
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          softWrap: false,
+                                                          style: TextStyle(
+                                                              fontSize: 10.w),
+                                                        ),
+                                                        SizedBox(height: 3.w),
+                                                        Text('눌러서 자세히 보기',
+                                                            style: TextStyle(
+                                                                color:
+                                                                    Colors.grey,
+                                                                fontSize: 10.w))
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),
+                                              onTap: () async {
+                                                await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            MemberRoomPage(
+                                                              host: attention[
+                                                                  idx],
+                                                              inProgress: false,
+                                                            )) //모임 자세히보기
+                                                    );
+                                                setState(() {});
+                                              },
                                             ),
-                                          );
-                                        },
-                                      );
-                                    },
-                                    separatorBuilder: (ctx, idx) {
-                                      return SizedBox(height: 8.w);
-                                    },
-                                  )
-                                : SizedBox(
-                                    height: 52.w,
-                                    child: Text(
-                                      ' 관심 등록한 모임이 없습니다.',
-                                      style: TextStyle(
-                                        fontSize: 22.w,
-                                        color: Colors.grey,
+                                            SizedBox(width: 4.w),
+                                            Container(
+                                              width: 14.w,
+                                              alignment: Alignment.bottomCenter,
+                                              child: InkWell(
+                                                  child: Icon(
+                                                    Icons.favorite,
+                                                    color: Color(0xFFEF5350),
+                                                    size: 16.w,
+                                                  ),
+                                                  onTap: () async {
+                                                    attention.removeAt(idx);
+                                                    await _roominfoA.set({
+                                                      'attention': attention,
+                                                    });
+                                                    setState(() {});
+                                                  }),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  );
+                                    );
+                                  },
+                                );
+                              },
+                              separatorBuilder: (ctx, idx) {
+                                return SizedBox(height: 8.w);
+                              },
+                            );
                           },
                         ),
                       ],
