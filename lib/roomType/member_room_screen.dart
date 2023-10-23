@@ -782,7 +782,7 @@ class _MemberRoomPageState extends State<MemberRoomPage> {
                             ),
                             onTap: () async {
                               requestNum++;
-                              if (requestNum % 4 == 0) {
+                              if (requestNum % 6 == 0) {
                                 if (_interstitialAd != null)
                                   _interstitialAd?.show();
                               }
